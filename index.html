@@ -1,250 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobile Lab Mityana – Laboratory Report</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mobile Lab Mityana — Laboratory Report</title>
 
-  <!-- ✅ PWA Manifest -->
-  <link rel="manifest" href="/mobile-lab-mityana-ug/manifest.json">
-  <meta name="theme-color" content="#0066cc">
-  <link rel="icon" href="icon-192.png" type="image/png">
+  <!-- PWA + Icons (hard links for your repo) -->
+  <meta name="theme-color" content="#22c55e" />
+  <link rel="manifest" href="/mobile-lab-mityana-ug/manifest.json" />
+  <link rel="icon" href="/mobile-lab-mityana-ug/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/mobile-lab-mityana-ug/icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/mobile-lab-mityana-ug/icons/icon-512.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/mobile-lab-mityana-ug/icons/maskable-icon-512.png" />
 
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    h1, h2 { text-align: center; }
-    .form-section { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 6px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
-    .test-list { columns: 2; }
-    .result-field { margin: 8px 0; }
-    #preview { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #eee; }
-    .header { text-align: center; margin-bottom: 20px; }
-    .header img { height: 60px; }
-    .buttons { margin-top: 15px; }
-    button { padding: 10px 15px; border: none; background: #0066cc; color: white; border-radius: 5px; cursor: pointer; margin-right: 10px; }
-    button:hover { background: #004c99; }
+    :root {
+      --brand: #22c55e;
+      --ink: #0f172a;
+      --muted: #475569;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; color: var(--ink); background: var(--bg); }
+    header { background: var(--brand); color: #fff; padding: 12px 18px; }
+    header .title { font-weight: 800; letter-spacing: .2px; }
+    main { max-width: 1100px; margin: 20px auto; padding: 0 16px; display: grid; gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    h2 { margin: 0 0 10px; font-size: 18px; }
+    .grid { display: grid; gap: 10px; }
+    .g2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .g3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    label small { color: var(--muted); display:block; margin-top:4px; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--ink);
+    }
+    textarea { min-height: 80px; }
+    .tests { columns: 320px; column-gap: 18px; }
+    .test-item { break-inside: avoid; display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn {
+      background: var(--brand); color: #fff; border: 0; padding: 10px 14px; border-radius: 10px;
+      font-weight: 600; cursor: pointer;
+    }
+    .btn.alt { background: #2563eb; }
+    .btn.ghost { background: #0f172a; }
+    .muted { color: var(--muted); }
 
-    /* ✅ Print Styles */
+    /* Dynamic results form */
+    .results-wrap { display: grid; gap: 10px; }
+    .result-row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; align-items: center; }
+    .unit { color: var(--muted); margin-left: 6px; font-size: 12px; }
+
+    /* Preview / Print */
+    #previewCard { padding: 0; overflow: hidden; }
+    .rep-head { padding: 16px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
+    .rep-title { font-weight: 800; font-size: 20px; line-height: 1.1; }
+    .rep-sub { color: var(--muted); font-size: 12px; }
+    .rep-logo { width: 56px; height: 56px; border-radius: 12px; border: 1px solid var(--border); object-fit: cover; }
+    .rep-body { padding: 16px; }
+    .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 12px; }
+    .kv div { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+    .kv b { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; }
+    th { background: #f8fafc; }
+    .signs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .sigbox { height: 64px; border: 1px dashed var(--border); border-radius: 10px; padding: 8px; }
+    .footnote { margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 780px) {
+      .g2, .g3 { grid-template-columns: 1fr; }
+      .kv { grid-template-columns: 1fr; }
+      .rep-head { grid-template-columns: auto 1fr; }
+    }
     @media print {
-      body { background: white; margin: 0; }
-      .form-section, .buttons { display: none; }
-      #preview { box-shadow: none; border: none; }
+      @page { size: A4; margin: 14mm; }
+      header, .card.form, .btns { display: none !important; }
+      body { background: #fff; }
+      #previewCard { border: none; }
     }
   </style>
 </head>
 <body>
+  <header>
+    <div class="title">Mobile Lab Mityana — Laboratory Report System</div>
+  </header>
 
-  <div class="form-section">
-    <h2>Enter Client & Test Information</h2>
-    <label>Client Name <input type="text" id="clientName"></label>
-    <label>Age <input type="number" id="age"></label>
-    <label>Gender 
-      <select id="gender">
-        <option value="">--Select--</option>
-        <option>Male</option>
-        <option>Female</option>
-      </select>
-    </label>
-    <label>Sample ID <input type="text" id="sampleId"></label>
+  <main>
+    <!-- Client & Sample -->
+    <section class="card form">
+      <h2>Client & Sample Details</h2>
+      <div class="grid g3">
+        <label>Client Name<input id="clientName" type="text" placeholder="e.g., John Doe" /></label>
+        <label>Age<input id="age" type="number" placeholder="e.g., 32" /></label>
+        <label>Gender
+          <select id="gender">
+            <option value="">Select</option><option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid g3" style="margin-top:10px">
+        <label>Sample ID<input id="sampleId" type="text" placeholder="e.g., S-2025-001" /></label>
+        <label>Technician
+          <select id="technician">
+            <option value="">Select Technician</option>
+            <option>Maweda Edrine</option>
+            <option>Matovu Timothy</option>
+          </select>
+        </label>
+        <label>Date (auto)<input id="reportDate" type="text" disabled /></label>
+      </div>
+      <small class="muted">Tip: Date fills automatically; you can edit after printing if needed.</small>
+    </section>
 
-    <label>Technician
-      <select id="technician">
-        <option value="">--Select Technician--</option>
-        <option>Maweda Edrine</option>
-        <option>Matovu Timothy</option>
-      </select>
-    </label>
+    <!-- Tests -->
+    <section class="card form">
+      <h2>Select Tests</h2>
+      <div id="testsList" class="tests"></div>
+      <div style="margin-top:10px" class="grid g2">
+        <label>Add Custom Test<input id="customTest" type="text" placeholder="e.g., Liver Enzymes Panel" /></label>
+        <button class="btn" onclick="addCustomTest()">Add Custom Test</button>
+      </div>
+    </section>
 
-    <h3>Select Tests</h3>
-    <div class="test-list" id="testList"></div>
-  </div>
+    <!-- Results (dynamic by selected tests) -->
+    <section class="card form">
+      <h2>Enter Results</h2>
+      <div id="resultsContainer" class="results-wrap">
+        <div class="muted">Tick tests above — their result inputs will appear here.</div>
+      </div>
+      <div class="btns" style="margin-top:10px">
+        <button class="btn" onclick="updatePreview()">Update Preview</button>
+        <button class="btn alt" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </section>
 
-  <div class="form-section">
-    <h2>Enter Results</h2>
-    <div id="resultsSection"></div>
-  </div>
-
-  <div id="preview" class="form-section">
-    <div class="header">
-      <img src="icon-192.png" alt="Lab Logo"><br>
-      <h1>Mobile Lab Mityana – Laboratory Report</h1>
-      <p>Mityana, Uganda</p>
-    </div>
-    <div id="reportContent"></div>
-  </div>
-
-  <div class="buttons">
-    <button onclick="updatePreview()">Update Preview</button>
-    <button onclick="window.print()">Print Report</button>
-    <button onclick="generateShareLink()">Share Link</button>
-  </div>
+    <!-- Preview / Print card -->
+    <section id="previewCard" class="card">
+      <div class="rep-head">
+        <img class="rep-logo" src="/mobile-lab-mityana-ug/icons/icon-192.png" alt="Lab Logo" />
+        <div>
+          <div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
+          <div class="rep-sub">Mityana, Uganda</div>
+        </div>
+        <div class="muted">Installable PWA</div>
+      </div>
+      <div class="rep-body" id="previewBody">
+        <p class="muted">Fill details and click <b>Update Preview</b>.</p>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // ✅ Define Tests with Config
-    const testConfig = {
-      "HIV": { type: "dropdown", options: ["Negative", "Positive"] },
-      "Malaria": { type: "dropdown", options: ["Negative", "Positive"] },
-      "Pregnancy": { type: "dropdown", options: ["Negative", "Positive"] },
-      "H. Pylori": { type: "dropdown", options: ["Negative", "Positive"] },
-      "Hepatitis B": { type: "dropdown", options: ["Negative", "Positive"] },
-      "Hepatitis C": { type: "dropdown", options: ["Negative", "Positive"] },
-      "RPR (Syphilis)": { type: "dropdown", options: ["Negative", "Positive"] },
-      "Sickling Test": { type: "dropdown", options: ["Negative", "Positive"] },
-      "Brucella": { type: "dropdown", options: ["Negative", "Positive"] },
+    // ======== CONFIG: tests -> input types/units/options ========
+    const TESTS = [
+      "BAT – Bleeding & Clotting Test",
+      "Blood Glucose",
+      "Blood Grouping",
+      "Blood Smear",
+      "Brucella Test",
+      "CBC – Complete Blood Count",
+      "Chlamydia Test",
+      "Electrolytes",
+      "Gonorrhea Test",
+      "Pregnancy Test (hCG)",
+      "Hepatitis B",
+      "Hepatitis C",
+      "HIV",
+      "H. Pylori Serum",
+      "H. Pylori Stool",
+      "Lipid Profile",
+      "Liver Function Test",
+      "PSA",
+      "Kidney Function Test",
+      "Rheumatoid Factor",
+      "RPR / Syphilis",
+      "Stool Analysis",
+      "Urinalysis",
+      "Widal Serum",
+      "Widal Stool",
+      "Gram Staining",
+      "DNA",
+      "Sickling Test",
+      "Malaria"
+    ];
 
+    const CONFIG = {
+      // Dropdown (Positive/Negative)
+      "HIV": { type: "dropdown", options: ["Negative","Positive"] },
+      "Malaria": { type: "dropdown", options: ["Negative","Positive"] },
+      "Hepatitis B": { type: "dropdown", options: ["Negative","Positive"] },
+      "Hepatitis C": { type: "dropdown", options: ["Negative","Positive"] },
+      "Pregnancy Test (hCG)": { type: "dropdown", options: ["Negative","Positive"] },
+      "Brucella Test": { type: "dropdown", options: ["Negative","Positive"] },
+      "H. Pylori Serum": { type: "dropdown", options: ["Negative","Positive"] },
+      "H. Pylori Stool": { type: "dropdown", options: ["Negative","Positive"] },
+      "RPR / Syphilis": { type: "dropdown", options: ["Non-reactive","Reactive"] },
+      "Sickling Test": { type: "dropdown", options: ["Negative","Positive"] },
+
+      // Numbers with units
       "Blood Glucose": { type: "number", unit: "mmol/L" },
-      "CBC – Complete Blood Count": { type: "number", unit: "cells/uL" },
-      "Hemoglobin": { type: "number", unit: "g/dL" },
+      "CBC – Complete Blood Count": { type: "number", unit: "cells/µL" },
       "PSA": { type: "number", unit: "ng/mL" },
-      "Kidney Function Test": { type: "number", unit: "mg/dL" },
       "Liver Function Test": { type: "number", unit: "U/L" },
+      "Kidney Function Test": { type: "number", unit: "mg/dL" },
       "Electrolytes": { type: "number", unit: "mmol/L" },
       "Lipid Profile": { type: "number", unit: "mmol/L" },
 
-      "Blood Grouping": { type: "text" },
-      "Blood Smear": { type: "text" },
-      "Stool Analysis": { type: "text" },
-      "Urinalysis": { type: "text" },
-      "Widal Test": { type: "text" },
-      "Gram Staining": { type: "text" },
-      "DNA Test": { type: "text" },
-      "Chlamydia": { type: "text" },
-      "Gonorrhea": { type: "text" }
+      // Free text
+      "BAT – Bleeding & Clotting Test": { type: "text", placeholder: "e.g., BT: 2min, CT: 6min" },
+      "Blood Grouping": { type: "text", placeholder: "e.g., O+" },
+      "Blood Smear": { type: "text", placeholder: "Describe findings..." },
+      "Chlamydia Test": { type: "text", placeholder: "Result or notes..." },
+      "Gonorrhea Test": { type: "text", placeholder: "Result or notes..." },
+      "Stool Analysis": { type: "text", placeholder: "Macroscopy/Microscopy..." },
+      "Urinalysis": { type: "text", placeholder: "Appearance, pH, proteins, etc." },
+      "Widal Serum": { type: "text", placeholder: "Titers..." },
+      "Widal Stool": { type: "text", placeholder: "Findings..." },
+      "Gram Staining": { type: "text", placeholder: "Gram +/-, morphology..." },
+      "DNA": { type: "text", placeholder: "Notes..." },
+      "Rheumatoid Factor": { type: "text", placeholder: "Value or qualitative..." }
     };
 
-    const clientName = document.getElementById("clientName");
-    const age = document.getElementById("age");
-    const gender = document.getElementById("gender");
-    const sampleId = document.getElementById("sampleId");
-    const technician = document.getElementById("technician");
-    const testList = document.getElementById("testList");
-    const resultsSection = document.getElementById("resultsSection");
-    const reportContent = document.getElementById("reportContent");
+    // Helpers
+    const byId = (id) => document.getElementById(id);
+    const slug = (s) => s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
 
-    // ✅ Render Test Checkboxes
-    for (let test in testConfig) {
-      let div = document.createElement("div");
-      div.innerHTML = `<label><input type="checkbox" class="test-option" value="${test}"> ${test}</label>`;
-      testList.appendChild(div);
-    }
-
-    // ✅ Listen for test selection
-    document.querySelectorAll(".test-option").forEach(cb => {
-      cb.addEventListener("change", renderResultFields);
+    // Populate tests list
+    const testsList = byId('testsList');
+    TESTS.forEach(test => {
+      const id = 't_' + slug(test);
+      const wrap = document.createElement('label');
+      wrap.className = 'test-item';
+      wrap.innerHTML = `<input type="checkbox" id="${id}" data-test="${test}" /> ${test}`;
+      testsList.appendChild(wrap);
     });
 
-    function renderResultFields() {
-      resultsSection.innerHTML = "";
-      document.querySelectorAll(".test-option:checked").forEach(cb => {
-        const config = testConfig[cb.value];
-        let field = document.createElement("div");
-        field.className = "result-field";
+    // Auto date
+    const dateEl = byId('reportDate');
+    const todayStr = new Date().toLocaleDateString();
+    dateEl.value = todayStr;
 
-        if (config.type === "dropdown") {
-          field.innerHTML = `<label>${cb.value}: 
-            <select data-test="${cb.value}">
-              ${config.options.map(o => `<option>${o}</option>`).join("")}
-            </select>
-          </label>`;
-        } else if (config.type === "number") {
-          field.innerHTML = `<label>${cb.value}: 
-            <input type="number" data-test="${cb.value}" step="any"> ${config.unit}
-          </label>`;
+    // When a test is (un)checked, (re)build the results fields
+    testsList.addEventListener('change', renderResultInputs);
+
+    function addCustomTest() {
+      const input = byId('customTest');
+      const val = (input.value || '').trim();
+      if (!val) return;
+      const id = 't_' + slug(val);
+      const wrap = document.createElement('label');
+      wrap.className = 'test-item';
+      wrap.innerHTML = `<input type="checkbox" id="${id}" data-test="${val}" checked /> ${val}`;
+      testsList.appendChild(wrap);
+      input.value = '';
+      renderResultInputs();
+      // Scroll to results input for the newly added test
+      setTimeout(() => {
+        const f = byId('res_' + slug(val));
+        if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+    }
+
+    function renderResultInputs() {
+      const container = byId('resultsContainer');
+      container.innerHTML = '';
+      const checked = [...testsList.querySelectorAll('input[type="checkbox"]:checked')];
+      if (checked.length === 0) {
+        container.innerHTML = `<div class="muted">Tick tests above — their result inputs will appear here.</div>`;
+        return;
+      }
+      checked.forEach(cb => {
+        const testName = cb.dataset.test;
+        const cfg = CONFIG[testName] || { type: 'text' };
+        const row = document.createElement('div');
+        row.className = 'result-row';
+        const label = document.createElement('div');
+        label.innerHTML = `<b>${testName}</b>`;
+        const field = document.createElement('div');
+        let inputHtml = '';
+        const baseId = 'res_' + slug(testName);
+
+        if (cfg.type === 'dropdown') {
+          inputHtml = `<select id="${baseId}">
+            <option value="">Select</option>
+            ${cfg.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+          </select>`;
+        } else if (cfg.type === 'number') {
+          inputHtml = `<div style="display:flex;align-items:center;gap:6px">
+              <input id="${baseId}" type="number" step="any" placeholder="Enter value" />
+              <span class="unit">${cfg.unit || ''}</span>
+            </div>`;
         } else {
-          field.innerHTML = `<label>${cb.value}: 
-            <textarea data-test="${cb.value}"></textarea>
-          </label>`;
+          inputHtml = `<input id="${baseId}" type="text" placeholder="${cfg.placeholder || 'Enter result'}" />`;
         }
-        resultsSection.appendChild(field);
+
+        field.innerHTML = inputHtml;
+        row.appendChild(label); row.appendChild(field);
+        container.appendChild(row);
       });
+    }
+
+    function collectResults() {
+      const checked = [...testsList.querySelectorAll('input[type="checkbox"]:checked')];
+      const rows = [];
+      checked.forEach(cb => {
+        const testName = cb.dataset.test;
+        const id = 'res_' + slug(testName);
+        const el = byId(id);
+        let value = '';
+        if (!el) value = '';
+        else if (el.tagName === 'SELECT') value = el.value || '';
+        else value = el.value || '';
+        const unit = (CONFIG[testName] && CONFIG[testName].unit) ? ` ${CONFIG[testName].unit}` : '';
+        rows.push({ test: testName, result: value + unit });
+      });
+      return rows;
     }
 
     function updatePreview() {
-      let html = `
-        <p><strong>Client:</strong> ${clientName.value} (${age.value} / ${gender.value}) 
-        <br><strong>Sample ID:</strong> ${sampleId.value}</p>
+      const name = byId('clientName').value || '—';
+      const age = byId('age').value || '—';
+      const gender = byId('gender').value || '—';
+      const sample = byId('sampleId').value || '—';
+      const tech = byId('technician').value || '—';
+      const date = byId('reportDate').value || new Date().toLocaleDateString();
+
+      const rows = collectResults();
+      const hasRows = rows.length > 0;
+
+      const tableHtml = `
         <table>
-          <tr><th>Test</th><th>Result</th></tr>
+          <thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead>
+          <tbody>
+            ${hasRows ? rows.map(r => `<tr><td>${r.test}</td><td>${r.result || '<span class="muted">—</span>'}</td></tr>`).join('') : `<tr><td colspan="2" class="muted">No tests selected</td></tr>`}
+          </tbody>
+        </table>
       `;
-      document.querySelectorAll(".test-option:checked").forEach(cb => {
-        const config = testConfig[cb.value];
-        let value;
-        const input = document.querySelector(`[data-test="${cb.value}"]`);
-        if (input) value = input.value;
-        if (config.unit && value) value += " " + config.unit;
-        html += `<tr><td>${cb.value}</td><td>${value || "-"}</td></tr>`;
-      });
-      html += `</table>
-        <p><strong>Technician:</strong> ${technician.value || "-"}<br>
-        <strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+
+      byId('previewBody').innerHTML = `
+        <div class="kv">
+          <div><b>Client</b>${name}</div>
+          <div><b>Age / Gender</b>${age} / ${gender}</div>
+          <div><b>Sample ID</b>${sample}</div>
+          <div><b>Date</b>${date}</div>
+        </div>
+        <h3 style="margin:0 0 8px">Tests Performed</h3>
+        ${tableHtml}
+        <div class="signs">
+          <div>
+            <b>Technician</b>
+            <div class="sigbox">${tech}</div>
+          </div>
+          <div>
+            <b>Signature</b>
+            <div class="sigbox"></div>
+          </div>
+        </div>
+        <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>
       `;
-      reportContent.innerHTML = html;
     }
 
-    function generateShareLink() {
-      const data = {
-        n: clientName.value,
-        a: age.value,
-        g: gender.value,
-        s: sampleId.value,
-        t: Array.from(document.querySelectorAll('.test-option:checked')).map(cb => cb.value),
-        r: {}
-      };
-      document.querySelectorAll("[data-test]").forEach(el => {
-        data.r[el.getAttribute("data-test")] = el.value;
-      });
-      data.tech = technician.value;
-      const link = location.origin + location.pathname + '#' + btoa(JSON.stringify(data));
-      navigator.clipboard.writeText(link).then(() => alert("Share link copied!"));
-    }
+    // Init
+    renderResultInputs();
+    updatePreview();
 
-    // ✅ Load from share link if exists
-    window.addEventListener("load", () => {
-      if (location.hash.length > 1) {
-        try {
-          const data = JSON.parse(atob(location.hash.substring(1)));
-          clientName.value = data.n || "";
-          age.value = data.a || "";
-          gender.value = data.g || "";
-          sampleId.value = data.s || "";
-          if (data.tech) technician.value = data.tech;
-
-          document.querySelectorAll('.test-option').forEach(cb => {
-            cb.checked = (data.t || []).includes(cb.value);
-          });
-          renderResultFields();
-
-          if (data.r) {
-            for (let test in data.r) {
-              const el = document.querySelector(`[data-test="${test}"]`);
-              if (el) el.value = data.r[test];
-            }
-          }
-          updatePreview();
-        } catch(e) { console.warn("Invalid share link"); }
-      }
-    });
-
-    // ✅ Service Worker Registration (Auto-update)
+    // ======== PWA: register service worker (hard link + scope) ========
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/mobile-lab-mityana-ug/service-worker.js", { scope: "/mobile-lab-mityana-ug/" })
-          .then(reg => {
-            console.log("✅ Service Worker registered:", reg);
-            reg.addEventListener("updatefound", () => {
-              const newSW = reg.installing;
-              newSW.addEventListener("statechange", () => {
-                if (newSW.state === "activated") {
-                  window.location.reload();
-                }
-              });
-            });
-          })
-          .catch(err => console.error("❌ Service Worker registration failed:", err));
+          .then(reg => console.log("✅ Service Worker registered:", reg.scope))
+          .catch(err => console.warn("❌ Service Worker failed:", err));
       });
     }
   </script>
