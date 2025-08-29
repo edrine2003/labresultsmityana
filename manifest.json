@@ -1,22 +1,29 @@
 {
   "name": "Mobile Lab Mityana",
   "short_name": "LabMityana",
-  "description": "Enter, preview, print and share client laboratory results for Mobile Lab Mityana (Uganda).",
-  "start_url": "/labresultsmityana/",
-  "scope": "/labresultsmityana/",
+  "description": "Enter, preview, print, and share client laboratory results for Mobile Lab Mityana (Uganda).",
+  "start_url": "/mobile-lab-mityana-ug/",
+  "scope": "/mobile-lab-mityana-ug/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#22c55e",
+  "theme_color": "#2d89ef",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/labresultsmityana/icons/icon-192.png",
+      "src": "/mobile-lab-mityana-ug/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/labresultsmityana/icons/icon-512.png",
+      "src": "/mobile-lab-mityana-ug/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/mobile-lab-mityana-ug/icons/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
     }
   ]
 }
