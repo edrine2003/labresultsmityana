@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mobile Lab Mityana — Laboratory Report</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <style>
 :root { --brand:#22c55e; --ink:#0f172a; --muted:#475569; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0; }
 *{box-sizing:border-box;}
@@ -22,17 +18,17 @@ h2{margin:0 0 10px;font-size:18px;}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr));}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
 label small{color:var(--muted);display:block;margin-top:4px;}
-input[type=text], input[type=number], select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--ink);}
+input[type=text], input[type=number], select, textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);font-size:13px;}
 textarea{min-height:80px;}
 .tests{columns:320px;column-gap:18px;}
 .test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0;}
 .btns{display:flex;flex-wrap:wrap;gap:8px;}
-.btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;}
+.btn{background:var(--brand);color:#fff;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;}
 .btn.alt{background:#2563eb;}
 .btn.ghost{background:#0f172a;}
 .muted{color:var(--muted);}
 .results-wrap{display:grid;gap:10px;}
-.result-row{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;align-items:center;}
+.result-row{margin-bottom:12px;}
 .unit{color:var(--muted);margin-left:6px;font-size:10px;}
 #previewCard{padding:0;overflow:hidden;}
 .rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;}
@@ -41,8 +37,8 @@ textarea{min-height:80px;}
 .rep-logo{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover;}
 .rep-body{padding:16px;}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
-.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
-.kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
+.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:13px;}
+.kv b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px;}
 table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12px;}
 th, td{border:1px solid var(--border);padding:6px 8px;text-align:center;}
 th{background:#f8fafc;}
@@ -51,107 +47,100 @@ tbody tr:nth-child(odd){background:#fff;}
 .signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
 .sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:8px;}
 .footnote{margin-top:10px;font-size:12px;color:var(--muted);}
-.stamp{border:4px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:250px;font-weight:700;}
-.stamp-date{margin-top:5px;font-size:12px;}
+.stamp{border:3px solid #1e40af;color:#1e40af;padding:6px;text-align:center;margin-top:20px;border-radius:6px;width:240px;font-weight:700;font-size:13px;}
+.stamp-date{margin-top:4px;font-size:11px;}
 @media (max-width:780px){.g2,.g3{grid-template-columns:1fr;}.kv{grid-template-columns:1fr;}.rep-head{grid-template-columns:auto 1fr;}}
 @media print{@page{size:A4;margin:14mm;}header,.card.form,.btns{display:none !important;}body{background:#fff;}#previewCard{border:none;}}
 </style>
 </head>
 <body>
 <header>
-<div class="title">Mobile Lab Mityana — Laboratory Report System</div>
+  <div class="title">Mobile Lab Mityana — Laboratory Report System</div>
 </header>
 <main>
-<section class="card form">
-<h2>Client & Sample Details</h2>
-<div class="grid g3">
-<label>Client Name<input id="clientName" type="text" placeholder="e.g., John Doe"/></label>
-<label>Age<input id="age" type="number" placeholder="e.g., 32"/></label>
-<label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
-</div>
-<div class="grid g3" style="margin-top:10px">
-<label>Sample ID<input id="sampleId" type="text" disabled/></label>
-<label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
-<label>Date (auto)<input id="reportDate" type="text" disabled/></label>
-</div>
-</section>
+  <section class="card form">
+    <h2>Client & Sample Details</h2>
+    <div class="grid g3">
+      <label>Client Name<input id="clientName" type="text"/></label>
+      <label>Age<input id="age" type="number"/></label>
+      <label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
+    </div>
+    <div class="grid g3" style="margin-top:10px">
+      <label>Sample ID<input id="sampleId" type="text" placeholder="Auto-generated"/></label>
+      <label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
+      <label>Date<input id="reportDate" type="text" disabled/></label>
+    </div>
+  </section>
 
-<section class="card form">
-<h2>Select Tests</h2>
-<div id="testsList" class="tests"></div>
-<div style="margin-top:10px" class="grid g2">
-<label>Add Custom Test<input id="customTest" type="text"/></label>
-<button class="btn" id="btnAddCustom">Add Custom Test</button>
-</div>
-</section>
+  <section class="card form">
+    <h2>Select Tests</h2>
+    <div id="testsList" class="tests"></div>
+  </section>
 
-<section class="card form">
-<h2>Enter Results</h2>
-<div id="resultsContainer" class="results-wrap">
-<div class="muted">Tick tests above — their result inputs will appear here.</div>
-</div>
-<div class="btns" style="margin-top:10px">
-<button id="btnUpdate" class="btn">Update Preview</button>
-<button id="btnDownload" class="btn alt">Download PDF</button>
-<button id="btnSave" class="btn ghost">Save Report</button>
-<button id="btnView" class="btn">View Saved Reports</button>
-<button id="btnExport" class="btn">Export Backup</button>
-<label class="btn alt" style="cursor:pointer">Import Backup
-<input type="file" id="importFile" style="display:none"/>
-</label>
-</div>
-</section>
+  <section class="card form">
+    <h2>Enter Results</h2>
+    <div id="resultsContainer" class="results-wrap">
+      <div class="muted">Tick tests above — their result inputs will appear here.</div>
+    </div>
+    <div class="btns" style="margin-top:10px">
+      <button id="btnUpdate" class="btn">Update Preview</button>
+      <button id="btnDownload" class="btn alt">Download PDF</button>
+      <button id="btnSave" class="btn ghost">Save Report</button>
+      <button id="btnView" class="btn">View Saved Reports</button>
+      <button id="btnExport" class="btn">Export Backup</button>
+      <label class="btn alt" style="cursor:pointer">Import Backup
+        <input type="file" id="importFile" style="display:none"/>
+      </label>
+    </div>
+  </section>
 
-<section id="previewCard" class="card">
-<div class="rep-head">
-<img class="rep-logo" src="/mobile-lab-mityana-ug/icons/icon-192.png" alt="Lab Logo"/>
-<div>
-<div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
-<div class="rep-sub">Mityana, Uganda</div>
-</div>
-<div class="muted">Installable PWA</div>
-</div>
-<div class="rep-body" id="reportPreview">
-<p class="muted">Fill details and click <b>Update Preview</b>.</p>
-</div>
-</section>
+  <section id="previewCard" class="card">
+    <div class="rep-head">
+      <img class="rep-logo" src="/mobile-lab-mityana-ug/icons/icon-192.png" alt="Lab Logo"/>
+      <div>
+        <div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
+        <div class="rep-sub">Mityana, Uganda</div>
+      </div>
+      <div class="muted">Installable PWA</div>
+    </div>
+    <div class="rep-body" id="reportPreview">
+      <p class="muted">Fill details and click <b>Update Preview</b>.</p>
+    </div>
+  </section>
 </main>
 
 <script>
-/* ------------------- Firebase Config ------------------- */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+const TESTS=["CBC – Complete Blood Count"];
+
+const CONFIG = {
+  "CBC – Complete Blood Count": {
+    type: "group",
+    fields: [
+      { param: "WBC", unit: "10⁹/L", range: "4.0 – 11.0" },
+      { param: "RBC", unit: "10¹²/L", range: "4.5 – 6.0" },
+      { param: "HBG", unit: "g/dL", range: "13.0 – 17.0" },
+      { param: "HCT", unit: "%", range: "40 – 50" },
+      { param: "MCV", unit: "fL", range: "80 – 100" },
+      { param: "MCH", unit: "pg", range: "27 – 33" },
+      { param: "MCHC", unit: "g/dL", range: "32 – 36" },
+      { param: "PLT", unit: "10⁹/L", range: "150 – 450" },
+      { param: "LY", unit: "%", range: "20 – 40" },
+      { param: "MO", unit: "%", range: "2 – 8" },
+      { param: "GR", unit: "%", range: "50 – 70" },
+      { param: "RDW-CV", unit: "%", range: "11.5 – 14.5" },
+      { param: "RDW-SD", unit: "fL", range: "37 – 54" },
+      { param: "PCT", unit: "%", range: "0.22 – 0.24" },
+      { param: "MPV", unit: "fL", range: "7.5 – 11.5" },
+      { param: "PDW", unit: "fL", range: "9 – 14" },
+      { param: "P-LCR", unit: "%", range: "13 – 43" }
+    ]
+  }
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
-/* ------------------- Tests & CBC Config ------------------- */
-const TESTS=["BAT – Bleeding & Clotting Test","Blood Glucose","Blood Grouping","Blood Smear","Brucella Test","CBC – Complete Blood Count","Chlamydia Test","Electrolytes","Gonorrhea Test","Pregnancy Test (hCG)","Hepatitis B","Hepatitis C","HIV","H. Pylori Serum","H. Pylori Stool","Lipid Profile","Liver Function Test","PSA","Kidney Function Test","Rheumatoid Factor","RPR / Syphilis","Stool Analysis","Urinalysis","Widal Serum","Widal Stool","Gram Staining","DNA","Sickling Test","Malaria"];
-
-const CONFIG={
-"CBC – Complete Blood Count":{type:"group",fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#","Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"],units:{RBC:"10¹²/L",Hb:"g/dL",Hct:"%",MCV:"fL",MCH:"pg",MCHC:"g/dL",RDW:"%",Retic:"%",WBC:"10⁹/L","Neut%":"%","Neut#":"10⁹/L","Lymph%":"%","Lymph#":"10⁹/L","Mono%":"%","Mono#":"10⁹/L","Eos%":"%","Eos#":"10⁹/L","Baso%":"%","Baso#":"10⁹/L","IG%":"%","PLT":"10⁹/L","MPV":"fL","PDW":"fL","Large PLT":"%","NLR":"ratio"}}};
-
-/* ------------------- Helpers ------------------- */
 const byId=id=>document.getElementById(id);
 const slug=s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
 
-/* ------------------- Auto Lab ID ------------------- */
-function generateLabId(clientName) {
-  if(!clientName) return 'LAB-001';
-  const initials = clientName.split(' ').map(w=>w[0].toUpperCase()).join('');
-  const data = JSON.parse(localStorage.getItem('labReports')||'[]');
-  const sameClientCount = data.filter(r=>r.client === clientName).length;
-  const num = (sameClientCount + 1).toString().padStart(3,'0');
-  return `${initials}-${num}`;
-}
-byId('clientName').addEventListener('blur', ()=>{ byId('sampleId').value = generateLabId(byId('clientName').value); });
-
-/* ------------------- Populate Tests ------------------- */
+// Populate tests
 const testsList=byId('testsList');
 TESTS.forEach(test=>{
   const id='t_'+slug(test);
@@ -161,47 +150,66 @@ TESTS.forEach(test=>{
   testsList.appendChild(wrap);
 });
 
-/* ------------------- Auto Date ------------------- */
+// Auto date & sample ID
 byId('reportDate').value=new Date().toLocaleDateString();
+let clientCounter=1;
+function autoSampleId(){
+  const name=byId('clientName').value.trim().split(" ")[0]||"Client";
+  byId('sampleId').value=name+"-"+String(clientCounter).padStart(3,"0");
+}
 
-/* ------------------- Render Inputs ------------------- */
+// Render result inputs
 function renderResultInputs(){
-  const container = byId('resultsContainer'); container.innerHTML='';
-  const checked = [...testsList.querySelectorAll('input[type=checkbox]:checked')];
-  if(!checked.length){ container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return;}
+  const container=byId('resultsContainer'); container.innerHTML='';
+  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
+  if(!checked.length){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return;}
   checked.forEach(cb=>{
-    const testName = cb.dataset.test;
+    const testName=cb.dataset.test;
     if(testName==="CBC – Complete Blood Count"){
-      const cfg = CONFIG[testName];
-      const div = document.createElement('div'); div.className='result-row';
-      div.innerHTML=`<table><thead><tr><th>Parameter</th><th>Unit</th><th>Result</th></tr></thead><tbody>${cfg.fields.map(f=>`<tr><td>${f}</td><td>${cfg.units[f]}</td><td><input type="number" id="res_${slug(f)}"/></td></tr>`).join('')}</tbody></table>`;
-      container.appendChild(div); return;
+      const cfg=CONFIG[testName];
+      const div=document.createElement("div");
+      div.className="result-row";
+      div.innerHTML=`
+        <h4>${testName}</h4>
+        <table>
+          <thead><tr><th>Parameter</th><th>Unit</th><th>Result</th><th>Normal Range</th></tr></thead>
+          <tbody>
+            ${cfg.fields.map(f=>`
+              <tr>
+                <td>${f.param}</td>
+                <td>${f.unit}</td>
+                <td><input type="number" id="res_${slug(f.param)}"/></td>
+                <td><input type="text" id="range_${slug(f.param)}" value="${f.range}"/></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>`;
+      container.appendChild(div);
     }
-    const row=document.createElement('div'); row.className='result-row';
-    row.innerHTML=`<b>${testName}</b><input type="text" id="res_${slug(testName)}" placeholder="Enter result"/>`;
-    container.appendChild(row);
   });
 }
 
-/* ------------------- Collect Results ------------------- */
+// Collect results
 function collectResults(){
-  const checked = [...testsList.querySelectorAll('input[type=checkbox]:checked')];
+  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
   const rows=[];
   checked.forEach(cb=>{
-    const testName = cb.dataset.test;
+    const testName=cb.dataset.test;
     if(testName==="CBC – Complete Blood Count"){
-      const cfg = CONFIG[testName];
-      const values=cfg.fields.map(f=>{const el=byId('res_'+slug(f)); return {param:f, unit:cfg.units[f], value: el?el.value||'—':'—'}});
+      const cfg=CONFIG[testName];
+      const values=cfg.fields.map(f=>{
+        const valEl=byId("res_"+slug(f.param));
+        const rangeEl=byId("range_"+slug(f.param));
+        return {param:f.param,unit:f.unit,value:valEl?valEl.value||"—":"—",range:rangeEl?rangeEl.value||f.range:f.range};
+      });
       rows.push({test:testName,values});
-    } else {
-      const el=byId('res_'+slug(testName)); rows.push({test:testName,result:el?el.value||'—':'—'});
     }
   });
   return rows;
 }
 
-/* ------------------- Update Preview ------------------- */
+// Update preview
 function updatePreview(){
+  autoSampleId();
   const name=byId('clientName').value||'—';
   const age=byId('age').value||'—';
   const gender=byId('gender').value||'—';
@@ -209,71 +217,77 @@ function updatePreview(){
   const tech=byId('technician').value||'—';
   const date=byId('reportDate').value||new Date().toLocaleDateString();
   const rows=collectResults();
-
-  let tableHtml='';
-  rows.forEach(r=>{
-    if(r.test==="CBC – Complete Blood Count"){
-      tableHtml+=`<h4>CBC – Complete Blood Count</h4>
-      <table><thead><tr><th>Parameter</th><th>Unit</th><th>Result</th></tr></thead><tbody>
-      ${r.values.map(v=>`<tr><td>${v.param}</td><td>${v.unit}</td><td>${v.value}</td></tr>`).join('')}
-      </tbody></table>`;
-    } else {
-      tableHtml+=`<tr><td>${r.test}</td><td>${r.result}</td></tr>`;
-    }
-  });
-  const otherTests = rows.filter(r=>r.test!=="CBC – Complete Blood Count");
-  if(otherTests.length){
-    tableHtml+=`<h4>Other Tests</h4><table><thead><tr><th>Test</th><th>Result</th></tr></thead><tbody>
-    ${otherTests.map(r=>`<tr><td>${r.test}</td><td>${r.result}</td></tr>`).join('')}
-    </tbody></table>`;
-  }
-
-  byId('reportPreview').innerHTML=`
+  let html=`
   <div class="kv">
     <div><b>Client</b>${name}</div>
     <div><b>Age / Gender</b>${age} / ${gender}</div>
     <div><b>Sample ID</b>${sample}</div>
     <div><b>Date</b>${date}</div>
-  </div>
-  ${tableHtml}
+  </div>`;
+  rows.forEach(r=>{
+    if(r.test==="CBC – Complete Blood Count"){
+      html+=`<h3>CBC – Complete Blood Count</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Unit</th><th>Result</th><th>Normal Range</th></tr></thead>
+        <tbody>
+          ${r.values.map(v=>`<tr><td>${v.param}</td><td>${v.unit}</td><td>${v.value}</td><td>${v.range}</td></tr>`).join("")}
+        </tbody>
+      </table>`;
+    }
+  });
+  html+=`
   <div class="signs">
     <div><b>Technician</b><div class="sigbox">${tech}</div></div>
     <div><b>Signature</b><div class="sigbox"></div></div>
   </div>
-  <div class="stamp">
-    DIAGNOSIS AT YOUR DOORSTEP<br>
-    0750992939 / 0778379591
-    <div class="stamp-date">Date: ${date}</div>
-  </div>
-  <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>
-  `;
+  <div class="stamp">DIAGNOSIS AT YOUR DOORSTEP<br>0750992939 / 0778379591<div class="stamp-date">Date: ${date}</div></div>
+  <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>`;
+  byId('reportPreview').innerHTML=html;
 }
 
-/* ------------------- Save / Cloud ------------------- */
-function saveReport(){ 
-  const report = {
+// Save / Backup
+function saveReport(){
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
+  data.push({
     client:byId('clientName').value||'—',
     sample:byId('sampleId').value||'—',
     date:byId('reportDate').value||new Date().toLocaleDateString(),
     results:collectResults()
+  });
+  localStorage.setItem('labReports',JSON.stringify(data));
+  alert('✅ Report saved.');
+  clientCounter++;
+}
+function showReports(){
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
+  if(!data.length){alert('No saved reports.');return;}
+  let msg='';
+  data.forEach((r,i)=>msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`);
+  alert(msg);
+}
+function exportBackup(){
+  const data=localStorage.getItem('labReports')||'[]';
+  const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='labBackup.json'; a.click();
+}
+function importBackup(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    localStorage.setItem('labReports',e.target.result);
+    alert('✅ Backup imported.');
   };
-  // LocalStorage
-  const data = JSON.parse(localStorage.getItem('labReports')||'[]');
-  data.push(report); localStorage.setItem('labReports',JSON.stringify(data)); 
-  // Firebase Cloud
-  db.collection('labReports').add(report)
-    .then(()=>alert('✅ Report saved locally and to cloud'))
-    .catch(e=>alert('❌ Error saving to cloud: '+e));
+  reader.readAsText(file);
+}
+async function downloadPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc=new jsPDF('p','pt','a4');
+  await doc.html(byId('reportPreview'),{callback:function(pdf){pdf.save('LabReport.pdf');},x:20,y:20,width:555});
 }
 
-function showReports(){ const data=JSON.parse(localStorage.getItem('labReports')||'[]'); if(!data.length){alert('No saved reports.');return;} let msg=''; data.forEach((r,i)=>msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`); alert(msg);}
-function exportBackup(){ const data=localStorage.getItem('labReports')||'[]'; const blob=new Blob([data],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='labBackup.json'; a.click();}
-function importBackup(file){ const reader=new FileReader(); reader.onload=e=>{ localStorage.setItem('labReports',e.target.result); alert('✅ Backup imported.'); renderResultInputs(); updatePreview(); }; reader.readAsText(file);}
-async function downloadPDF(){ const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'pt', 'a4'); await doc.html(byId('reportPreview'),{callback:function(pdf){pdf.save('LabReport.pdf');},x:20,y:20,width:555});}
-
-/* ------------------- Events ------------------- */
+// Events
 testsList.addEventListener('change', renderResultInputs);
-byId('btnAddCustom').addEventListener('click',()=>{const val=byId('customTest').value.trim();if(!val)return;const id='t_'+slug(val);const wrap=document.createElement('label');wrap.className='test-item';wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${val}" checked/> ${val}`;testsList.appendChild(wrap);byId('customTest').value='';renderResultInputs();});
 byId('btnUpdate').addEventListener('click',updatePreview);
 byId('btnSave').addEventListener('click',saveReport);
 byId('btnView').addEventListener('click',showReports);
@@ -281,8 +295,9 @@ byId('btnExport').addEventListener('click',exportBackup);
 byId('importFile').addEventListener('change',e=>importBackup(e.target.files[0]));
 byId('btnDownload').addEventListener('click',downloadPDF);
 
-/* ------------------- Init ------------------- */
-renderResultInputs(); updatePreview();
+// Init
+renderResultInputs();
+updatePreview();
 </script>
 </body>
 </html>
