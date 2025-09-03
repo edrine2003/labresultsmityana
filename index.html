@@ -39,8 +39,8 @@ textarea{min-height:80px;}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
 .kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
 .kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
-th, td{border:1px solid var(--border);padding:6px 8px;text-align:left;font-size:12px;}
+table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12px;}
+th, td{border:1px solid var(--border);padding:6px 8px;text-align:left;}
 th{background:#f8fafc;}
 .signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
 .sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:8px;}
@@ -148,20 +148,15 @@ const CONFIG = {
 "Gram Staining":{type:"text",placeholder:"Gram +/-, morphology..."},
 "DNA":{type:"text",placeholder:"Notes..."},
 "Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative..."},
-"CBC – Complete Blood Count": {
-  type:"group",
-  fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#",
-  "Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"],
-  unit:""
-}
+"CBC – Complete Blood Count":{type:"group",fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#","Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"]}
 };
 
 // ===== HELPERS =====
-const byId=id=>document.getElementById(id);
-const slug=s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+const byId = id=>document.getElementById(id);
+const slug = s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
 
-// Populate tests
-const testsList=byId('testsList');
+// Populate tests list
+const testsList = byId('testsList');
 TESTS.forEach(test=>{
   const id='t_'+slug(test);
   const wrap=document.createElement('label');
@@ -174,12 +169,12 @@ TESTS.forEach(test=>{
 const dateEl=byId('reportDate');
 dateEl.value=new Date().toLocaleDateString();
 
-// ===== DYNAMIC RESULTS =====
+// Render result inputs
 function renderResultInputs(){
   const container=byId('resultsContainer');
   container.innerHTML='';
-  const checked=[...testsList.querySelectorAll('input[type="checkbox"]:checked')];
-  if(checked.length===0){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>';return;}
+  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
+  if(!checked.length){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return;}
   checked.forEach(cb=>{
     const testName=cb.dataset.test;
     const cfg=CONFIG[testName]||{type:'text'};
@@ -188,27 +183,30 @@ function renderResultInputs(){
     const label=document.createElement('div');
     label.innerHTML=`<b>${testName}</b>`;
     const field=document.createElement('div');
-
     let inputHtml='';
     const baseId='res_'+slug(testName);
 
     if(cfg.type==='dropdown'){
       inputHtml=`<select id="${baseId}"><option value="">Select</option>${cfg.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;
-    }else if(cfg.type==='number'){
+    } else if(cfg.type==='number'){
       inputHtml=`<div style="display:flex;align-items:center;gap:6px"><input id="${baseId}" type="number" step="any" placeholder="Enter value"/><span class="unit">${cfg.unit||''}</span></div>`;
-    }else if(cfg.type==='group'){
-      inputHtml='<table><thead><tr>'+cfg.fields.map(f=>`<th>${f}</th>`).join('')+'</tr></thead><tbody><tr>'+cfg.fields.map(f=>`<td><input type="text" id="${baseId+'-'+slug(f)}"/></td>`).join('')+'</tr></tbody></table>';
-    }else{
+    } else if(cfg.type==='group'){
+      // CBC table
+      inputHtml='<table><thead><tr>'+cfg.fields.map(f=>`<th>${f}</th>`).join('')+'</tr></thead><tbody><tr>'+cfg.fields.map(f=>`<td><input type="text" id="${baseId+'-'+slug(f)}" placeholder=""/></td>`).join('')+'</tr></tbody></table>';
+    } else{
       inputHtml=`<input id="${baseId}" type="text" placeholder="${cfg.placeholder||'Enter result'}"/>`;
     }
+
     field.innerHTML=inputHtml;
-    row.appendChild(label);row.appendChild(field);container.appendChild(row);
+    row.appendChild(label);
+    row.appendChild(field);
+    container.appendChild(row);
   });
 }
 
 // Collect results
 function collectResults(){
-  const checked=[...testsList.querySelectorAll('input[type="checkbox"]:checked')];
+  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
   const rows=[];
   checked.forEach(cb=>{
     const testName=cb.dataset.test;
@@ -216,20 +214,20 @@ function collectResults(){
     if(cfg.type==='group'){
       const values=cfg.fields.map(f=>{
         const el=byId('res_'+slug(testName)+'-'+slug(f));
-        return el?el.value||'':'';
-      });
-      rows.push({test:testName,result:values.map((v,i)=>cfg.fields[i]+': '+(v||'—')).join('<br>')});
-    }else{
+        return `${f}: ${el?el.value||'—':''}`;
+      }).join('; ');
+      rows.push({test:testName,result:values});
+    } else {
       const el=byId('res_'+slug(testName));
-      let val='';
-      if(el){val=el.value||''; if(cfg.unit) val+=' '+cfg.unit;}
-      rows.push({test:testName,result:val||'<span class="muted">—</span>'});
+      const val=el?el.value||'—':'—';
+      const unit=cfg.unit?` ${cfg.unit}`:'';
+      rows.push({test:testName,result:val+unit});
     }
   });
   return rows;
 }
 
-// ===== UPDATE PREVIEW =====
+// Update preview
 function updatePreview(){
   const name=byId('clientName').value||'—';
   const age=byId('age').value||'—';
@@ -238,8 +236,10 @@ function updatePreview(){
   const tech=byId('technician').value||'—';
   const date=byId('reportDate').value||new Date().toLocaleDateString();
   const rows=collectResults();
-  const tableHtml=rows.length>0?'<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${r.test}</td><td>${r.result}</td></tr>`).join('')+'</tbody></table>':'<div class="muted">No tests selected</div>';
-  byId('reportPreview').innerHTML=`<div class="kv">
+  const tableHtml=`<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r.test}</td><td>${r.result||'<span class="muted">—</span>'}</td></tr>`).join(''):`<tr><td colspan="2" class="muted">No tests selected</td></tr>`}</tbody></table>`;
+
+  byId('reportPreview').innerHTML=`
+  <div class="kv">
     <div><b>Client</b>${name}</div>
     <div><b>Age / Gender</b>${age} / ${gender}</div>
     <div><b>Sample ID</b>${sample}</div>
@@ -252,25 +252,22 @@ function updatePreview(){
     <div><b>Signature</b><div class="sigbox"></div></div>
   </div>
   <div class="stamp">
-    Mobile Lab Mityana<br>
-    0750992939 / 0778379591<br>
-    Diagnosis at your doorstep<br>
-    <span class="stamp-date">${new Date().toLocaleDateString()}</span>
+    DIAGNOSIS AT YOUR DOORSTEP<br>
+    0750992939 / 0778379591
+    <div class="stamp-date">Date: ${date}</div>
   </div>
-  <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>`;
+  <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>
+  `;
 }
 
-// ===== SAVE / VIEW / EXPORT =====
+// ===== SAVE / BACKUP =====
 function saveReport(){
   const data=JSON.parse(localStorage.getItem('labReports')||'[]');
-  data.push({
-    client:byId('clientName').value||'—',
-    date:new Date().toLocaleDateString(),
-    sample:byId('sampleId').value||'—',
-    html:byId('reportPreview').innerHTML
-  });
+  const rows=collectResults();
+  const report={client:byId('clientName').value||'—',sample:byId('sampleId').value||'—',date:byId('reportDate').value||new Date().toLocaleDateString(),results:rows};
+  data.push(report);
   localStorage.setItem('labReports',JSON.stringify(data));
-  alert('✅ Report saved locally.');
+  alert('✅ Report saved.');
 }
 
 function showReports(){
