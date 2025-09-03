@@ -4,14 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mobile Lab Mityana — Laboratory Report</title>
-
-<!-- jsPDF for PDF export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- OPTIONAL Firebase (safe to leave as-is; works locally without it) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <style>
 :root { --brand:#22c55e; --ink:#0f172a; --muted:#475569; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0; }
 *{box-sizing:border-box;}
@@ -25,39 +17,33 @@ h2{margin:0 0 10px;font-size:18px;}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr));}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
 label small{color:var(--muted);display:block;margin-top:4px;}
-input[type=text], input[type=number], select, textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);font-size:13px;}
+input, select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;}
 textarea{min-height:80px;}
 .tests{columns:320px;column-gap:18px;}
 .test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0;}
 .btns{display:flex;flex-wrap:wrap;gap:8px;}
-.btn{background:var(--brand);color:#fff;border:0;padding:8px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;}
+.btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;}
 .btn.alt{background:#2563eb;}
 .btn.ghost{background:#0f172a;}
 .muted{color:var(--muted);}
-.results-wrap{display:grid;gap:10px;}
-.result-row{margin-bottom:12px;}
-.unit{color:var(--muted);margin-left:6px;font-size:10px;}
-#previewCard{padding:0;overflow:hidden;}
+.result-row{margin-bottom:10px;}
+table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12px;}
+th, td{border:1px solid var(--border);padding:6px 8px;text-align:center;}
+th{background:#f8fafc;}
+tbody tr:nth-child(even){background:#f8fafc;}
 .rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;}
 .rep-title{font-weight:800;font-size:20px;line-height:1.1;}
 .rep-sub{color:var(--muted);font-size:12px;}
 .rep-logo{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover;}
 .rep-body{padding:16px;}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
-.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:13px;}
-.kv b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px;}
-table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12px;}
-th, td{border:1px solid var(--border);padding:6px 8px;text-align:center;}
-th{background:#f8fafc;}
-tbody tr:nth-child(even){background:#f8fafc;}
-tbody tr:nth-child(odd){background:#fff;}
+.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
 .signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
 .sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:8px;}
-.footnote{margin-top:10px;font-size:12px;color:var(--muted);}
-.stamp{border:3px solid #1e40af;color:#1e40af;padding:6px;text-align:center;margin-top:20px;border-radius:6px;width:240px;font-weight:700;font-size:13px;}
-.stamp-date{margin-top:4px;font-size:11px;}
-@media (max-width:780px){.g2,.g3{grid-template-columns:1fr;}.kv{grid-template-columns:1fr;}.rep-head{grid-template-columns:auto 1fr;}}
-@media print{@page{size:A4;margin:14mm;}header,.card.form,.btns{display:none !important;}body{background:#fff;}#previewCard{border:none;}}
+.stamp{border:4px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:250px;font-weight:700;}
+.stamp-date{margin-top:5px;font-size:12px;}
+@media print{@page{size:A4;margin:14mm;}header,.form,.btns{display:none !important;}body{background:#fff;}#previewCard{border:none;}}
 </style>
 </head>
 <body>
@@ -65,30 +51,31 @@ tbody tr:nth-child(odd){background:#fff;}
   <div class="title">Mobile Lab Mityana — Laboratory Report System</div>
 </header>
 <main>
+  <!-- Client -->
   <section class="card form">
     <h2>Client & Sample Details</h2>
     <div class="grid g3">
-      <label>Client Name<input id="clientName" type="text" placeholder="e.g., John Doe"/></label>
-      <label>Age<input id="age" type="number" placeholder="e.g., 32"/></label>
-      <label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
+      <label>Client Name<input id="clientName" type="text" /></label>
+      <label>Age<input id="age" type="number" /></label>
+      <label>Gender<select id="gender"><option>Male</option><option>Female</option></select></label>
     </div>
     <div class="grid g3" style="margin-top:10px">
-      <label>Sample / Lab ID<input id="sampleId" type="text" placeholder="Auto-generated"/></label>
-      <label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
+      <label>Lab ID<input id="sampleId" type="text" disabled/></label>
+      <label>Technician<select id="technician"><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
       <label>Date<input id="reportDate" type="text" disabled/></label>
     </div>
   </section>
 
+  <!-- Tests -->
   <section class="card form">
     <h2>Select Tests</h2>
     <div id="testsList" class="tests"></div>
   </section>
 
+  <!-- Results -->
   <section class="card form">
     <h2>Enter Results</h2>
-    <div id="resultsContainer" class="results-wrap">
-      <div class="muted">Tick tests above — their result inputs will appear here.</div>
-    </div>
+    <div id="resultsContainer"></div>
     <div class="btns" style="margin-top:10px">
       <button id="btnUpdate" class="btn">Update Preview</button>
       <button id="btnDownload" class="btn alt">Download PDF</button>
@@ -101,9 +88,10 @@ tbody tr:nth-child(odd){background:#fff;}
     </div>
   </section>
 
+  <!-- Preview -->
   <section id="previewCard" class="card">
     <div class="rep-head">
-      <img class="rep-logo" src="/mobile-lab-mityana-ug/icons/icon-192.png" alt="Lab Logo"/>
+      <img class="rep-logo" src="icons/logo.png" alt="Lab Logo"/>
       <div>
         <div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
         <div class="rep-sub">Mityana, Uganda</div>
@@ -116,378 +104,165 @@ tbody tr:nth-child(odd){background:#fff;}
   </section>
 </main>
 
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-/* ========= OPTIONAL Firebase config (safe to ignore if you don't use Firebase) ========= */
-let db = null;
-try {
-  const firebaseConfig = {
-    apiKey: "",                 // <-- add if you use Firebase
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+document.addEventListener("DOMContentLoaded", () => {
+  const byId=id=>document.getElementById(id);
+
+  // Auto Lab ID + Date
+  const reports = JSON.parse(localStorage.getItem('labReports')||'[]');
+  byId('sampleId').value = "LAB-" + (reports.length+1).toString().padStart(4,"0");
+  byId('reportDate').value=new Date().toLocaleDateString();
+
+  // Tests
+  const TESTS=[
+    "CBC – Complete Blood Count","HIV","Malaria","Blood Glucose","Blood Grouping","Lipid Profile","Liver Function","Kidney Function","PSA","Pregnancy (hCG)","Hepatitis B","Hepatitis C","Brucella","RPR","Chlamydia","Gonorrhea","Electrolytes","Rheumatoid Factor","H. Pylori (Serum)","H. Pylori (Stool)","Bleeding & Clotting (BAT)","Blood Smear"
+  ];
+  const CBC_FIELDS=["WBC","RBC","Hb","Hct","MCV","MCH","MCHC","PLT","LY","MO","GR","RDW-CV","RDW-SD","PCT","MPV","PDW","P-LCR"];
+  const CBC_UNITS={"WBC":"10⁹/L","RBC":"10¹²/L","Hb":"g/dL","Hct":"%","MCV":"fL","MCH":"pg","MCHC":"g/dL","PLT":"10⁹/L","LY":"%","MO":"%","GR":"%","RDW-CV":"%","RDW-SD":"fL","PCT":"%","MPV":"fL","PDW":"fL","P-LCR":"%"};
+
+  // Config
+  const CONFIG={
+    "CBC – Complete Blood Count":{type:"cbc"},
+    "HIV":{type:"dropdown",options:["Negative","Positive"]},
+    "Malaria":{type:"dropdown",options:["Negative","Positive"]},
+    "Blood Glucose":{type:"number",unit:"mmol/L"},
+    "Blood Grouping":{type:"dropdown",options:["A+","A-","B+","B-","O+","O-","AB+","AB-"]},
+    "Pregnancy (hCG)":{type:"dropdown",options:["Negative","Positive"]},
+    "Hepatitis B":{type:"dropdown",options:["Negative","Positive"]},
+    "Hepatitis C":{type:"dropdown",options:["Negative","Positive"]},
+    "Brucella":{type:"dropdown",options:["Negative","Positive"]},
+    "RPR":{type:"dropdown",options:["Non-Reactive","Reactive"]},
+    "Chlamydia":{type:"dropdown",options:["Negative","Positive"]},
+    "Gonorrhea":{type:"dropdown",options:["Negative","Positive"]},
+    "Electrolytes":{type:"textarea"},
+    "Lipid Profile":{type:"textarea"},
+    "Liver Function":{type:"textarea"},
+    "Kidney Function":{type:"textarea"},
+    "PSA":{type:"number",unit:"ng/mL"},
+    "Rheumatoid Factor":{type:"dropdown",options:["Negative","Positive"]},
+    "H. Pylori (Serum)":{type:"dropdown",options:["Negative","Positive"]},
+    "H. Pylori (Stool)":{type:"dropdown",options:["Negative","Positive"]},
+    "Bleeding & Clotting (BAT)":{type:"textarea"},
+    "Blood Smear":{type:"textarea"}
   };
-  if (firebaseConfig.apiKey) {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
+
+  // Render tests
+  const testsList=byId('testsList');
+  TESTS.forEach(test=>{
+    const wrap=document.createElement('label');
+    wrap.className='test-item';
+    wrap.innerHTML=`<input type="checkbox" data-test="${test}"/> ${test}`;
+    testsList.appendChild(wrap);
+  });
+
+  // Render inputs
+  function renderResultInputs(){
+    const container=byId('resultsContainer'); container.innerHTML='';
+    [...testsList.querySelectorAll('input:checked')].forEach(cb=>{
+      const test=cb.dataset.test; const cfg=CONFIG[test]||{type:'text'};
+      if(cfg.type==='cbc'){
+        let html='<h3>CBC Parameters</h3><table><thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Reference Range</th></tr></thead><tbody>';
+        CBC_FIELDS.forEach(f=>{
+          html+=`<tr>
+            <td>${f}</td>
+            <td><input type="text" id="res_${f}"/></td>
+            <td>${CBC_UNITS[f]}</td>
+            <td><input type="text" id="ref_${f}" placeholder="Normal range"/></td>
+          </tr>`;
+        });
+        html+='</tbody></table>';
+        container.innerHTML+=html;
+      } else if(cfg.type==='dropdown'){
+        container.innerHTML+=`<div class="result-row"><b>${test}</b><br><select id="res_${test}">${cfg.options.map(o=>`<option>${o}</option>`)}</select></div>`;
+      } else if(cfg.type==='number'){
+        container.innerHTML+=`<div class="result-row"><b>${test}</b><br><input type="number" id="res_${test}"/> ${cfg.unit||''}</div>`;
+      } else if(cfg.type==='textarea'){
+        container.innerHTML+=`<div class="result-row"><b>${test}</b><br><textarea id="res_${test}"></textarea></div>`;
+      }
+    });
   }
-} catch(e){ db = null; }
 
-/* ========= Tests master list ========= */
-const TESTS = [
-  "BAT – Bleeding & Clotting Test",
-  "Blood Glucose",
-  "Blood Grouping",
-  "Blood Smear",
-  "Brucella Test",
-  "CBC – Complete Blood Count",
-  "Chlamydia Test",
-  "Electrolytes",
-  "Gonorrhea Test",
-  "Pregnancy Test (hCG)",
-  "Hepatitis B",
-  "Hepatitis C",
-  "HIV",
-  "H. Pylori Serum",
-  "H. Pylori Stool",
-  "Lipid Profile",
-  "Liver Function Test",
-  "PSA",
-  "Kidney Function Test",
-  "Rheumatoid Factor",
-  "RPR / Syphilis",
-  "Stool Analysis",
-  "Urinalysis",
-  "Widal Serum",
-  "Widal Stool",
-  "Gram Staining",
-  "DNA",
-  "Sickling Test",
-  "Malaria"
-];
-
-/* ========= Configs =========
-   - CBC is a table with editable normal ranges (your request)
-   - Rapid tests are dropdowns
-   - Numeric tests have units (fixed here)
-   - Text tests are free text
-*/
-const CONFIG = {
-  // Qualitative dropdowns
-  "HIV":{type:"dropdown",options:["Negative","Positive"]},
-  "Malaria":{type:"dropdown",options:["Negative","Positive"]},
-  "Hepatitis B":{type:"dropdown",options:["Negative","Positive"]},
-  "Hepatitis C":{type:"dropdown",options:["Negative","Positive"]},
-  "Pregnancy Test (hCG)":{type:"dropdown",options:["Negative","Positive"]},
-  "Brucella Test":{type:"dropdown",options:["Negative","Positive"]},
-  "H. Pylori Serum":{type:"dropdown",options:["Negative","Positive"]},
-  "H. Pylori Stool":{type:"dropdown",options:["Negative","Positive"]},
-  "RPR / Syphilis":{type:"dropdown",options:["Non-reactive","Reactive"]},
-  "Sickling Test":{type:"dropdown",options:["Negative","Positive"]},
-
-  // Numbers
-  "Blood Glucose":{type:"number",unit:"mmol/L"},
-  "PSA":{type:"number",unit:"ng/mL"},
-  "Liver Function Test":{type:"number",unit:"U/L"},
-  "Kidney Function Test":{type:"number",unit:"mg/dL"},
-  "Electrolytes":{type:"number",unit:"mmol/L"},
-  "Lipid Profile":{type:"number",unit:"mmol/L"},
-
-  // Text / descriptive
-  "BAT – Bleeding & Clotting Test":{type:"text",placeholder:"e.g., BT: 2min, CT: 6min"},
-  "Blood Grouping":{type:"text",placeholder:"e.g., O+"},
-  "Blood Smear":{type:"text",placeholder:"Describe findings..."},
-  "Chlamydia Test":{type:"text",placeholder:"Result or notes..."},
-  "Gonorrhea Test":{type:"text",placeholder:"Result or notes..."},
-  "Stool Analysis":{type:"text",placeholder:"Macroscopy/Microscopy..."},
-  "Urinalysis":{type:"text",placeholder:"Appearance, pH, proteins, etc."},
-  "Widal Serum":{type:"text",placeholder:"Titers..."},
-  "Widal Stool":{type:"text",placeholder:"Findings..."},
-  "Gram Staining":{type:"text",placeholder:"Gram +/-, morphology..."},
-  "DNA":{type:"text",placeholder:"Notes..."},
-  "Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative..."},
-
-  // CBC table with editable ranges (ONLY the parameters you asked for)
-  "CBC – Complete Blood Count":{
-    type:"cbc",
-    fields:[
-      { param:"WBC",    unit:"10⁹/L", range:"4.0 – 11.0" },
-      { param:"RBC",    unit:"10¹²/L", range:"4.5 – 6.0" },
-      { param:"HBG",    unit:"g/dL",   range:"13.0 – 17.0" },
-      { param:"HCT",    unit:"%",      range:"40 – 50" },
-      { param:"MCV",    unit:"fL",     range:"80 – 100" },
-      { param:"MCH",    unit:"pg",     range:"27 – 33" },
-      { param:"MCHC",   unit:"g/dL",   range:"32 – 36" },
-      { param:"PLT",    unit:"10⁹/L",  range:"150 – 450" },
-      { param:"LY",     unit:"%",      range:"20 – 40" },
-      { param:"MO",     unit:"%",      range:"2 – 8" },
-      { param:"GR",     unit:"%",      range:"50 – 70" },
-      { param:"RDW-CV", unit:"%",      range:"11.5 – 14.5" },
-      { param:"RDW-SD", unit:"fL",     range:"37 – 54" },
-      { param:"PCT",    unit:"%",      range:"0.22 – 0.24" },
-      { param:"MPV",    unit:"fL",     range:"7.5 – 11.5" },
-      { param:"PDW",    unit:"fL",     range:"9 – 14" },
-      { param:"P-LCR",  unit:"%",      range:"13 – 43" }
-    ]
+  // Collect results
+  function collectResults(){
+    const rows=[];
+    [...testsList.querySelectorAll('input:checked')].forEach(cb=>{
+      const test=cb.dataset.test; const cfg=CONFIG[test]||{type:'text'};
+      if(cfg.type==='cbc'){
+        let res={test:test,table:[]};
+        CBC_FIELDS.forEach(f=>{
+          const val=byId('res_'+f)?.value||'—';
+          const ref=byId('ref_'+f)?.value||'—';
+          res.table.push({param:f,val:val,unit:CBC_UNITS[f]||'',ref:ref});
+        });
+        rows.push(res);
+      } else {
+        const val=byId('res_'+test)?.value||'—';
+        rows.push({test:test,result:val});
+      }
+    });
+    return rows;
   }
-};
 
-/* ========= Helpers ========= */
-const byId=id=>document.getElementById(id);
-const slug=s=>String(s).replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+  // Update Preview
+  function updatePreview(){
+    const rows=collectResults();
+    let html=`<div class="kv">
+      <div><b>Client</b>${byId('clientName').value}</div>
+      <div><b>Age/Gender</b>${byId('age').value} / ${byId('gender').value}</div>
+      <div><b>Lab ID</b>${byId('sampleId').value}</div>
+      <div><b>Date</b>${byId('reportDate').value}</div>
+    </div>`;
 
-/* ========= Auto date ========= */
-byId('reportDate').value=new Date().toLocaleDateString();
+    rows.forEach(r=>{
+      if(r.table){
+        html+=`<h3>${r.test}</h3><table><thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Ref Range</th></tr></thead><tbody>`;
+        r.table.forEach(t=>{html+=`<tr><td>${t.param}</td><td>${t.val}</td><td>${t.unit}</td><td>${t.ref}</td></tr>`});
+        html+='</tbody></table>';
+      } else {
+        html+=`<p><b>${r.test}:</b> ${r.result}</p>`;
+      }
+    });
 
-/* ========= Auto-generate Lab ID from client name + count ========= */
-function generateLabId(clientName){
-  if(!clientName) return "LAB-001";
-  const initials = clientName.trim().split(/\s+/).map(w=>w[0]?.toUpperCase()||"").join("") || "LAB";
-  const stored = JSON.parse(localStorage.getItem('labReports')||'[]');
-  const countForClient = stored.filter(r=>r.client===clientName).length + 1;
-  return `${initials}-${String(countForClient).padStart(3,'0')}`;
-}
-byId('clientName').addEventListener('blur', ()=>{
-  byId('sampleId').value = generateLabId(byId('clientName').value);
+    byId('reportPreview').innerHTML=html;
+  }
+
+  // Save Report
+  function saveReport(){
+    const data=JSON.parse(localStorage.getItem('labReports')||'[]');
+    data.push({client:byId('clientName').value,date:byId('reportDate').value,id:byId('sampleId').value,rows:collectResults()});
+    localStorage.setItem('labReports',JSON.stringify(data));
+    alert('✅ Report saved');
+  }
+
+  // View Reports
+  function showReports(){
+    const data=JSON.parse(localStorage.getItem('labReports')||'[]');
+    if(!data.length){alert('No saved reports');return;}
+    alert(data.map((r,i)=>`${i+1}. ${r.client} - ${r.date} (${r.id})`).join('\n'));
+  }
+
+  // Export / Import
+  function exportBackup(){const blob=new Blob([localStorage.getItem('labReports')||'[]'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup.json';a.click();}
+  function importBackup(file){const reader=new FileReader();reader.onload=e=>{localStorage.setItem('labReports',e.target.result);alert('✅ Backup imported');};reader.readAsText(file);}
+
+  // PDF
+  async function downloadPDF(){
+    const { jsPDF } = window.jspdf;
+    const doc=new jsPDF('p','pt','a4');
+    await doc.html(byId('reportPreview'),{callback:function(pdf){pdf.save('LabReport.pdf');},x:20,y:20,width:555});
+  }
+
+  // Events
+  testsList.addEventListener('change',renderResultInputs);
+  byId('btnUpdate').addEventListener('click',updatePreview);
+  byId('btnSave').addEventListener('click',saveReport);
+  byId('btnView').addEventListener('click',showReports);
+  byId('btnExport').addEventListener('click',exportBackup);
+  byId('importFile').addEventListener('change',e=>importBackup(e.target.files[0]));
+  byId('btnDownload').addEventListener('click',downloadPDF);
 });
-
-/* ========= Populate tests list ========= */
-const testsList=byId('testsList');
-TESTS.forEach(test=>{
-  const id='t_'+slug(test);
-  const wrap=document.createElement('label');
-  wrap.className='test-item';
-  wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${test}"/> ${test}`;
-  testsList.appendChild(wrap);
-});
-
-/* ========= Render result inputs ========= */
-function renderResultInputs(){
-  const container=byId('resultsContainer'); container.innerHTML='';
-  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
-  if(!checked.length){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return;}
-  checked.forEach(cb=>{
-    const testName=cb.dataset.test;
-    const cfg=CONFIG[testName] || {type:"text"};
-
-    if(cfg.type==="cbc"){
-      const div=document.createElement("div");
-      div.className="result-row";
-      div.innerHTML=`
-        <h4 style="margin:0 0 8px">${testName}</h4>
-        <table>
-          <thead><tr><th>Parameter</th><th>Unit</th><th>Result</th><th>Normal Range</th></tr></thead>
-          <tbody>
-            ${cfg.fields.map(f=>`
-              <tr>
-                <td>${f.param}</td>
-                <td>${f.unit}</td>
-                <td><input type="number" id="res_${slug(testName)}_${slug(f.param)}" step="any"/></td>
-                <td><input type="text" id="range_${slug(testName)}_${slug(f.param)}" value="${f.range}"/></td>
-              </tr>`).join("")}
-          </tbody>
-        </table>`;
-      container.appendChild(div);
-      return;
-    }
-
-    if(cfg.type==="dropdown"){
-      const div=document.createElement('div'); div.className='result-row';
-      div.innerHTML=`
-        <div style="font-weight:700;margin-bottom:4px">${testName}</div>
-        <select id="res_${slug(testName)}">
-          <option value="">Select</option>
-          ${cfg.options.map(o=>`<option>${o}</option>`).join('')}
-        </select>`;
-      container.appendChild(div);
-      return;
-    }
-
-    if(cfg.type==="number"){
-      const div=document.createElement('div'); div.className='result-row';
-      div.innerHTML=`
-        <div style="font-weight:700;margin-bottom:4px">${testName}</div>
-        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
-          <input id="res_${slug(testName)}" type="number" step="any" placeholder="Result"/>
-          <span class="unit">${cfg.unit||''}</span>
-          <input id="range_${slug(testName)}" type="text" placeholder="Normal range (optional)"/>
-        </div>`;
-      container.appendChild(div);
-      return;
-    }
-
-    // text default
-    const div=document.createElement('div'); div.className='result-row';
-    div.innerHTML=`
-      <div style="font-weight:700;margin-bottom:4px">${testName}</div>
-      <input id="res_${slug(testName)}" type="text" placeholder="${cfg.placeholder||'Enter result'}"/>`;
-    container.appendChild(div);
-  });
-}
-
-/* ========= Collect results ========= */
-function collectResults(){
-  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
-  const rows=[];
-  checked.forEach(cb=>{
-    const testName=cb.dataset.test;
-    const cfg=CONFIG[testName] || {type:"text"};
-    if(cfg.type==="cbc"){
-      const values=cfg.fields.map(f=>{
-        const vEl=byId(`res_${slug(testName)}_${slug(f.param)}`);
-        const rEl=byId(`range_${slug(testName)}_${slug(f.param)}`);
-        return {param:f.param,unit:f.unit,value:vEl?vEl.value||"—":"—",range:rEl?rEl.value||f.range:f.range};
-      });
-      rows.push({test:testName,type:"cbc",values});
-      return;
-    }
-    if(cfg.type==="number"){
-      const vEl=byId(`res_${slug(testName)}`);
-      const rn=byId(`range_${slug(testName)}`)?.value || "";
-      rows.push({test:testName,type:"number",result:(vEl?vEl.value:"—"),unit:cfg.unit||"",range:rn});
-      return;
-    }
-    const vEl=byId(`res_${slug(testName)}`);
-    rows.push({test:testName,type:cfg.type,result:vEl?(vEl.value||"—"):"—"});
-  });
-  return rows;
-}
-
-/* ========= Update preview / printable ========= */
-function updatePreview(){
-  // ensure sample id auto
-  const clientName = byId('clientName').value;
-  if(!byId('sampleId').value){ byId('sampleId').value = generateLabId(clientName); }
-
-  const name=clientName||'—';
-  const age=byId('age').value||'—';
-  const gender=byId('gender').value||'—';
-  const sample=byId('sampleId').value||'—';
-  const tech=byId('technician').value||'—';
-  const date=byId('reportDate').value||new Date().toLocaleDateString();
-  const rows=collectResults();
-
-  let html=`
-  <div class="kv">
-    <div><b>Client</b>${name}</div>
-    <div><b>Age / Gender</b>${age} / ${gender}</div>
-    <div><b>Sample ID</b>${sample}</div>
-    <div><b>Date</b>${date}</div>
-  </div>`;
-
-  // CBC first (if any)
-  rows.filter(r=>r.type==="cbc").forEach(r=>{
-    html += `<h3 style="margin:6px 0">CBC – Complete Blood Count</h3>
-      <table>
-        <thead><tr><th>Parameter</th><th>Unit</th><th>Result</th><th>Normal Range</th></tr></thead>
-        <tbody>
-          ${r.values.map(v=>`<tr><td>${v.param}</td><td>${v.unit}</td><td>${v.value}</td><td>${v.range}</td></tr>`).join('')}
-        </tbody>
-      </table>`;
-  });
-
-  // Other tests in a compact table
-  const others = rows.filter(r=>r.type!=="cbc");
-  if(others.length){
-    html += `<h3 style="margin:10px 0 6px">Other Tests</h3>
-      <table>
-        <thead><tr><th style="width:50%">Test</th><th>Result</th></tr></thead><tbody>
-        ${others.map(r=>{
-          if(r.type==="number"){
-            const rng = r.range ? ` (Range: ${r.range})` : '';
-            const val = r.result ? `${r.result} ${r.unit||""}`.trim() : "—";
-            return `<tr><td>${r.test}</td><td>${val}${rng}</td></tr>`;
-          } else {
-            return `<tr><td>${r.test}</td><td>${r.result}</td></tr>`;
-          }
-        }).join('')}
-      </tbody></table>`;
-  }
-
-  html += `
-  <div class="signs">
-    <div><b>Technician</b><div class="sigbox">${tech||""}</div></div>
-    <div><b>Signature</b><div class="sigbox"></div></div>
-  </div>
-  <div class="stamp">DIAGNOSIS AT YOUR DOORSTEP<br>0750992939 / 0778379591<div class="stamp-date">Date: ${date}</div></div>
-  <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>`;
-
-  byId('reportPreview').innerHTML = html;
-}
-
-/* ========= Save / Backup / Import / Cloud ========= */
-function getReportObject(){
-  return {
-    client:byId('clientName').value||'—',
-    age:byId('age').value||'—',
-    gender:byId('gender').value||'—',
-    sample:byId('sampleId').value||'—',
-    technician:byId('technician').value||'—',
-    date:byId('reportDate').value||new Date().toLocaleDateString(),
-    results:collectResults()
-  };
-}
-function saveReport(){
-  const report = getReportObject();
-  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
-  data.push(report);
-  localStorage.setItem('labReports',JSON.stringify(data));
-  // Cloud (only if Firebase configured)
-  if(db){
-    db.collection('labReports').add(report)
-      .then(()=>alert('✅ Report saved locally & to cloud'))
-      .catch(()=>alert('✅ Saved locally. Cloud save failed (check Firebase config).'));
-  } else {
-    alert('✅ Report saved locally.');
-  }
-}
-function showReports(){
-  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
-  if(!data.length){alert('No saved reports.');return;}
-  let msg='';
-  data.forEach((r,i)=>msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`);
-  alert(msg);
-}
-function exportBackup(){
-  const data=localStorage.getItem('labReports')||'[]';
-  const blob=new Blob([data],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='labBackup.json'; a.click();
-}
-function importBackup(file){
-  const reader=new FileReader();
-  reader.onload=e=>{
-    localStorage.setItem('labReports',e.target.result);
-    alert('✅ Backup imported.');
-    updatePreview();
-  };
-  reader.readAsText(file);
-}
-
-/* ========= PDF ========= */
-async function downloadPDF(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p','pt','a4');
-  await doc.html(byId('reportPreview'),{
-    callback:function(pdf){ pdf.save('LabReport.pdf'); },
-    x:20, y:20, width:555
-  });
-}
-
-/* ========= Events ========= */
-testsList.addEventListener('change', renderResultInputs);
-byId('btnUpdate').addEventListener('click', updatePreview);
-byId('btnSave').addEventListener('click', saveReport);
-byId('btnView').addEventListener('click', showReports);
-byId('btnExport').addEventListener('click', exportBackup);
-byId('importFile').addEventListener('change', e=>importBackup(e.target.files[0]));
-byId('btnDownload').addEventListener('click', downloadPDF);
-
-/* ========= Init ========= */
-renderResultInputs();
-updatePreview();
 </script>
 </body>
 </html>
