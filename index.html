@@ -118,7 +118,7 @@ const TESTS=["BAT – Bleeding & Clotting Test","Blood Glucose","Blood Grouping"
 const CONFIG={
 "CBC – Complete Blood Count":{type:"group",fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#","Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"],units:{RBC:"10¹²/L",Hb:"g/dL",Hct:"%",MCV:"fL",MCH:"pg",MCHC:"g/dL",RDW:"%",Retic:"%",WBC:"10⁹/L","Neut%":"%","Neut#":"10⁹/L","Lymph%":"%","Lymph#":"10⁹/L","Mono%":"%","Mono#":"10⁹/L","Eos%":"%","Eos#":"10⁹/L","Baso%":"%","Baso#":"10⁹/L","IG%":"%","PLT":"10⁹/L","MPV":"fL","PDW":"fL","Large PLT":"%","NLR":"ratio"}}};
 
-// Helper
+// Helpers
 const byId=id=>document.getElementById(id);
 const slug=s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
 
@@ -135,55 +135,86 @@ TESTS.forEach(test=>{
 // Auto date
 byId('reportDate').value=new Date().toLocaleDateString();
 
-// Render Inputs
+// Render inputs (CBC as table)
 function renderResultInputs(){
-  const container=byId('resultsContainer'); container.innerHTML='';
-  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
-  if(!checked.length){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return;}
-  checked.forEach(cb=>{
-    const testName=cb.dataset.test; const cfg=CONFIG[testName]||{type:'text'};
-    if(testName==="CBC – Complete Blood Count"){
-      const div=document.createElement('div'); div.className='result-row';
-      div.innerHTML=`<table border="1" cellspacing="0" cellpadding="4" style="width:100%">
-      <thead><tr><th>Parameter</th><th>Unit</th><th>Result</th></tr></thead>
-      <tbody>${cfg.fields.map(f=>`<tr><td>${f}</td><td>${cfg.units[f]||''}</td><td><input type="number" id="res_${slug(f)}"/></td></tr>`).join('')}</tbody></table>`;
+  const container = byId('resultsContainer');
+  container.innerHTML = '';
+  const checked = [...testsList.querySelectorAll('input[type=checkbox]:checked')];
+  if (!checked.length) {
+    container.innerHTML = '<div class="muted">Tick tests above — their result inputs will appear here.</div>';
+    return;
+  }
+
+  checked.forEach(cb => {
+    const testName = cb.dataset.test;
+    const cfg = CONFIG[testName] || { type: 'text' };
+
+    if (testName === "CBC – Complete Blood Count") {
+      const div = document.createElement('div'); 
+      div.className = 'result-row';
+      div.innerHTML = `
+        <table border="1" cellspacing="0" cellpadding="4" style="width:100%">
+          <thead>
+            <tr><th>Parameter</th><th>Unit</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            ${cfg.fields.map(f => `
+              <tr>
+                <td>${f}</td>
+                <td>${cfg.units[f] || ''}</td>
+                <td><input type="number" id="res_${slug(f)}"/></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      `;
       container.appendChild(div);
       return;
     }
-    const row=document.createElement('div'); row.className='result-row';
-    const label=document.createElement('div'); label.innerHTML=`<b>${testName}</b>`;
-    const field=document.createElement('div'); 
-    const baseId='res_'+slug(testName);
-    let inputHtml='';
-    if(cfg.type==='dropdown'){inputHtml=`<select id="${baseId}"><option value="">Select</option>${cfg.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;}
-    else if(cfg.type==='number'){inputHtml=`<div style="display:flex;align-items:center;gap:6px"><input id="${baseId}" type="number" step="any"/><span class="unit">${cfg.unit||''}</span></div>`;}
-    else{inputHtml=`<input id="${baseId}" type="text" placeholder="${cfg.placeholder||'Enter result'}"/>`;}
-    field.innerHTML=inputHtml; row.appendChild(label); row.appendChild(field); container.appendChild(row);
+
+    // Other tests remain standard
+    const row = document.createElement('div'); 
+    row.className = 'result-row';
+    const label = document.createElement('div'); label.innerHTML = `<b>${testName}</b>`;
+    const field = document.createElement('div'); 
+    const baseId = 'res_' + slug(testName);
+    field.innerHTML = `<input id="${baseId}" type="text" placeholder="Enter result"/>`;
+    row.appendChild(label); row.appendChild(field); container.appendChild(row);
   });
 }
 
-// Collect Results
+// Collect results
 function collectResults(){
-  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')]; const rows=[];
+  const checked = [...testsList.querySelectorAll('input[type=checkbox]:checked')];
+  const rows=[];
   checked.forEach(cb=>{
-    const testName=cb.dataset.test; const cfg=CONFIG[testName]||{type:'text'};
-    if(testName==="CBC – Complete Blood Count"){
-      const values=cfg.fields.map(f=>{const el=byId('res_'+slug(f)); return `${f}: ${el?el.value||'—':'—'}`;}).join('; ');
+    const testName = cb.dataset.test;
+    if(testName === "CBC – Complete Blood Count"){
+      const cfg = CONFIG[testName];
+      const values = cfg.fields.map(f=>{
+        const el = byId('res_'+slug(f));
+        return `${f}: ${el?el.value||'—':''}`;
+      }).join('; ');
       rows.push({test:testName,result:values});
-      return;
+    } else {
+      const el = byId('res_'+slug(testName));
+      const val = el?el.value||'—':'—';
+      rows.push({test:testName,result:val});
     }
-    const el=byId('res_'+slug(testName)); const val=el?el.value||'—':'—'; rows.push({test:testName,result:val});
   });
   return rows;
 }
 
-// Update Preview
+// Update preview
 function updatePreview(){
-  const name=byId('clientName').value||'—'; const age=byId('age').value||'—';
-  const gender=byId('gender').value||'—'; const sample=byId('sampleId').value||'—';
-  const tech=byId('technician').value||'—'; const date=byId('reportDate').value||new Date().toLocaleDateString();
+  const name=byId('clientName').value||'—';
+  const age=byId('age').value||'—';
+  const gender=byId('gender').value||'—';
+  const sample=byId('sampleId').value||'—';
+  const tech=byId('technician').value||'—';
+  const date=byId('reportDate').value||new Date().toLocaleDateString();
   const rows=collectResults();
   const tableHtml=`<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r.test}</td><td>${r.result||'<span class="muted">—</span>'}</td></tr>`).join(''):`<tr><td colspan="2" class="muted">No tests selected</td></tr>`}</tbody></table>`;
+
   byId('reportPreview').innerHTML=`
   <div class="kv">
     <div><b>Client</b>${name}</div>
@@ -207,36 +238,51 @@ function updatePreview(){
 }
 
 // Save / Backup
-function saveReport(){
-  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
-  data.push({client:byId('clientName').value||'—',sample:byId('sampleId').value||'—',date:byId('reportDate').value||new Date().toLocaleDateString(),results:collectResults()});
-  localStorage.setItem('labReports',JSON.stringify(data));
-  alert('✅ Report saved.');
-}
-function showReports(){
+function saveReport(){ 
   const data=JSON.parse(localStorage.getItem('labReports')||'[]'); 
-  if(!data.length){alert('No saved reports.');return;}
-  let msg=''; data.forEach((r,i)=>msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`); alert(msg);
+  data.push({client:byId('clientName').value||'—',sample:byId('sampleId').value||'—',date:byId('reportDate').value||new Date().toLocaleDateString(),results:collectResults()}); 
+  localStorage.setItem('labReports',JSON.stringify(data)); 
+  alert('✅ Report saved.'); 
 }
-function exportBackup(){
-  const data=localStorage.getItem('labReports')||'[]';
-  const blob=new Blob([data],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='labBackup.json'; a.click();
+function showReports(){ 
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]'); 
+  if(!data.length){alert('No saved reports.');return;} 
+  let msg=''; 
+  data.forEach((r,i)=>msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`);
+  alert(msg);
 }
-function importBackup(file){
-  const reader=new FileReader();
-  reader.onload=e=>{ localStorage.setItem('labReports',e.target.result); alert('✅ Backup imported.'); };
+function exportBackup(){ 
+  const data=localStorage.getItem('labReports')||'[]'; 
+  const blob=new Blob([data],{type:'application/json'}); 
+  const a=document.createElement('a'); 
+  a.href=URL.createObjectURL(blob); 
+  a.download='labBackup.json'; 
+  a.click();
+}
+function importBackup(file){ 
+  const reader=new FileReader(); 
+  reader.onload=e=>{ localStorage.setItem('labReports',e.target.result); alert('✅ Backup imported.'); }; 
   reader.readAsText(file);
 }
-async function downloadPDF(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p', 'pt', 'a4');
+async function downloadPDF(){ 
+  const { jsPDF } = window.jspdf; 
+  const doc = new jsPDF('p', 'pt', 'a4'); 
   await doc.html(byId('reportPreview'),{callback:function(pdf){pdf.save('LabReport.pdf');},x:20,y:20,width:555});
 }
 
 // Events
 testsList.addEventListener('change', renderResultInputs);
-byId('btnAddCustom').addEventListener('click',()=>{const val=byId('customTest').value.trim();if(!val)return;const id='t_'+slug(val);const wrap=document.createElement('label');wrap.className='test-item';wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${val}" checked/> ${val}`;testsList.appendChild(wrap);byId('customTest').value='';renderResultInputs();});
+byId('btnAddCustom').addEventListener('click',()=>{
+  const val=byId('customTest').value.trim();
+  if(!val)return;
+  const id='t_'+slug(val);
+  const wrap=document.createElement('label');
+  wrap.className='test-item';
+  wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${val}" checked/> ${val}`;
+  testsList.appendChild(wrap);
+  byId('customTest').value='';
+  renderResultInputs();
+});
 byId('btnUpdate').addEventListener('click',updatePreview);
 byId('btnSave').addEventListener('click',saveReport);
 byId('btnView').addEventListener('click',showReports);
