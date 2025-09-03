@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mobile Lab Mityana — Laboratory Report</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root { --brand:#22c55e; --ink:#0f172a; --muted:#475569; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0; }
 *{box-sizing:border-box;}
@@ -47,7 +47,7 @@ th{background:#f8fafc;}
 tbody tr:nth-child(even){background:#f8fafc;}
 tbody tr:nth-child(odd){background:#fff;}
 .signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
-.sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:0;background:#fff;cursor:crosshair;width:100%;}
+.sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:8px;}
 .footnote{margin-top:10px;font-size:12px;color:var(--muted);}
 .stamp{border:4px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:250px;font-weight:700;}
 .stamp-date{margin-top:5px;font-size:12px;}
@@ -116,6 +116,8 @@ tbody tr:nth-child(odd){background:#fff;}
 </main>
 
 <script>
+const ENCRYPT_KEY="labmityana_secret123";
+
 const TESTS=["BAT – Bleeding & Clotting Test","Blood Glucose","Blood Grouping","Blood Smear","Brucella Test","CBC – Complete Blood Count","Chlamydia Test","Electrolytes","Gonorrhea Test","Pregnancy Test (hCG)","Hepatitis B","Hepatitis C","HIV","H. Pylori Serum","H. Pylori Stool","Lipid Profile","Liver Function Test","PSA","Kidney Function Test","Rheumatoid Factor","RPR / Syphilis","Stool Analysis","Urinalysis","Widal Serum","Widal Stool","Gram Staining","DNA","Sickling Test","Malaria"];
 
 const CONFIG={
@@ -130,10 +132,25 @@ const CONFIG={
 "RPR / Syphilis":{type:"dropdown",options:["Non-reactive","Reactive"]},
 "Sickling Test":{type:"dropdown",options:["Negative","Positive"]},
 "Blood Glucose":{type:"number",unit:"mmol/L"},
-"CBC – Complete Blood Count":{type:"group",fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#","Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"],units:{RBC:"10¹²/L",Hb:"g/dL",Hct:"%",MCV:"fL",MCH:"pg",MCHC:"g/dL",RDW:"%",Retic:"%",WBC:"10⁹/L","Neut%":"%","Neut#":"10⁹/L","Lymph%":"%","Lymph#":"10⁹/L","Mono%":"%","Mono#":"10⁹/L","Eos%":"%","Eos#":"10⁹/L","Baso%":"%","Baso#":"10⁹/L","IG%":"%","PLT":"10⁹/L","MPV":"fL","PDW":"fL","Large PLT":"%","NLR":"ratio"}}};
-
-// --- Encryption key
-const ENCRYPT_KEY="labmityana2025";
+"PSA":{type:"number",unit:"ng/mL"},
+"Liver Function Test":{type:"number",unit:"U/L"},
+"Kidney Function Test":{type:"number",unit:"mg/dL"},
+"Electrolytes":{type:"number",unit:"mmol/L"},
+"Lipid Profile":{type:"number",unit:"mmol/L"},
+"BAT – Bleeding & Clotting Test":{type:"text",placeholder:"e.g., BT: 2min, CT: 6min"},
+"Blood Grouping":{type:"text",placeholder:"e.g., O+"},
+"Blood Smear":{type:"text",placeholder:"Describe findings..."},
+"Chlamydia Test":{type:"text",placeholder:"Result or notes..."},
+"Gonorrhea Test":{type:"text",placeholder:"Result or notes..."},
+"Stool Analysis":{type:"text",placeholder:"Macroscopy/Microscopy..."},
+"Urinalysis":{type:"text",placeholder:"Appearance, pH, proteins, etc."},
+"Widal Serum":{type:"text",placeholder:"Titers..."},
+"Widal Stool":{type:"text",placeholder:"Findings..."},
+"Gram Staining":{type:"text",placeholder:"Gram +/-, morphology..."},
+"DNA":{type:"text",placeholder:"Notes..."},
+"Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative..."},
+"CBC – Complete Blood Count":{type:"group",fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#","Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"],units:{RBC:"10¹²/L",Hb:"g/dL",Hct:"%",MCV:"fL",MCH:"pg",MCHC:"g/dL",RDW:"%",Retic:"%",WBC:"10⁹/L","Neut%":"%","Neut#":"10⁹/L","Lymph%":"%","Lymph#":"10⁹/L","Mono%":"%","Mono#":"10⁹/L","Eos%":"%","Eos#":"10⁹/L","Baso%":"%","Baso#":"10⁹/L","IG%":"%","PLT":"10⁹/L","MPV":"fL","PDW":"fL","Large PLT":"%","NLR":"ratio"}}
+};
 
 const byId=id=>document.getElementById(id);
 const slug=s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
@@ -154,30 +171,36 @@ dateEl.value=new Date().toLocaleDateString();
 
 // Render result inputs
 function renderResultInputs(){
-  const container=byId('resultsContainer'); container.innerHTML='';
-  const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')];
+  const container = byId('resultsContainer');
+  container.innerHTML='';
+  const checked = [...testsList.querySelectorAll('input[type=checkbox]:checked')];
   if(!checked.length){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return;}
+  
   checked.forEach(cb=>{
-    const testName=cb.dataset.test; const cfg=CONFIG[testName]||{type:'text'};
-    const row=document.createElement('div'); row.className='result-row';
-    const label=document.createElement('div'); label.innerHTML=`<b>${testName}</b>`;
-    const field=document.createElement('div'); let inputHtml=''; const baseId='res_'+slug(testName);
+    const testName = cb.dataset.test;
+    const cfg = CONFIG[testName] || {type:'text'};
+    const row = document.createElement('div'); row.className='result-row';
+    const label = document.createElement('div'); label.innerHTML=`<b>${testName}</b>`;
+    const field = document.createElement('div');
+    let inputHtml=''; const baseId='res_'+slug(testName);
 
-    if(cfg.type==='dropdown'){
+    if(cfg.type==='group'){
+      // CBC table in form
+      inputHtml = `<table border="1" cellspacing="0" cellpadding="4"><thead><tr>${cfg.fields.map(f=>`<th>${f}<br><span style="font-size:10px;color:#555">${cfg.units[f]||''}</span></th>`).join('')}</tr></thead><tbody><tr>${cfg.fields.map(f=>`<td><input type="number" id="${baseId+'-'+slug(f)}"/></td>`).join('')}</tr></tbody></table>`;
+    } else if(cfg.type==='dropdown'){
       inputHtml=`<select id="${baseId}"><option value="">Select</option>${cfg.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;
     } else if(cfg.type==='number'){
       inputHtml=`<div style="display:flex;align-items:center;gap:6px"><input id="${baseId}" type="number" step="any"/><span class="unit">${cfg.unit||''}</span></div>`;
-    } else if(cfg.type==='group'){
-      inputHtml='<table><thead><tr>'+cfg.fields.map(f=>`<th>${f}<br><span style="font-size:10px;color:#555">${cfg.units[f]||""}</span></th>`).join('')+'</tr></thead><tbody><tr>'+cfg.fields.map(f=>`<td><input type="number" id="${baseId+'-'+slug(f)}"/></td>`).join('')+'</tr></tbody></table>';
     } else{
       inputHtml=`<input id="${baseId}" type="text" placeholder="${cfg.placeholder||'Enter result'}"/>`;
     }
 
-    field.innerHTML=inputHtml; row.appendChild(label); row.appendChild(field); container.appendChild(row);
+    field.innerHTML = inputHtml; row.appendChild(label); row.appendChild(field);
+    container.appendChild(row);
   });
 }
 
-// Collect results + signatures
+// Collect results
 function collectResults(){
   const checked=[...testsList.querySelectorAll('input[type=checkbox]:checked')]; 
   const rows=[];
@@ -190,16 +213,11 @@ function collectResults(){
       }).join('; ');
       rows.push({test:testName,result:values});
     } else{
-      const el=byId('res_'+slug(testName)); const val=el?el.value||'—':'—'; const unit=cfg.unit?` ${cfg.unit}`:''; 
+      const el=byId('res_'+slug(testName)); const val=el?el.value||'—':'—'; const unit=cfg.unit?` ${cfg.unit}`:'';
       rows.push({test:testName,result:val+unit});
     }
   });
-  // Signatures
-  const techCanvas = byId('techSig');
-  const clientCanvas = byId('clientSig');
-  const techSig = techCanvas ? techCanvas.toDataURL() : '';
-  const clientSig = clientCanvas ? clientCanvas.toDataURL() : '';
-  return {results: rows, techSig, clientSig};
+  return rows;
 }
 
 // Update preview
@@ -210,8 +228,8 @@ function updatePreview(){
   const sample=byId('sampleId').value||'—';
   const tech=byId('technician').value||'—';
   const date=byId('reportDate').value||new Date().toLocaleDateString();
-  const {results,techSig,clientSig}=collectResults();
-  const tableHtml=`<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>${results.length?results.map(r=>`<tr><td>${r.test}</td><td>${r.result||'<span class="muted">—</span>'}</td></tr>`).join(''):`<tr><td colspan="2" class="muted">No tests selected</td></tr>`}</tbody></table>`;
+  const rows=collectResults();
+  const tableHtml=`<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r.test}</td><td>${r.result||'<span class="muted">—</span>'}</td></tr>`).join(''):`<tr><td colspan="2" class="muted">No tests selected</td></tr>`}</tbody></table>`;
 
   byId('reportPreview').innerHTML=`<div class="kv">
     <div><b>Client</b>${name}</div>
@@ -222,8 +240,8 @@ function updatePreview(){
   <h3 style="margin:0 0 8px">Tests Performed</h3>
   ${tableHtml}
   <div class="signs">
-    <div><b>Technician</b><canvas id="techSig" class="sigbox"></canvas></div>
-    <div><b>Client Signature</b><canvas id="clientSig" class="sigbox"></canvas></div>
+    <div><b>Technician</b><div class="sigbox">${tech}</div></div>
+    <div><b>Signature</b><div class="sigbox"></div></div>
   </div>
   <div class="stamp">
     DIAGNOSIS AT YOUR DOORSTEP<br>
@@ -231,72 +249,44 @@ function updatePreview(){
     <div class="stamp-date">Date: ${date}</div>
   </div>
   <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>`;
-
-  initSignature('techSig'); initSignature('clientSig');
 }
 
-// Initialize signature canvas
-function initSignature(canvasId){
-  const canvas=byId(canvasId); const ctx=canvas.getContext('2d');
-  let drawing=false;
-  canvas.addEventListener('mousedown', e=>{drawing=true; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY);});
-  canvas.addEventListener('mousemove', e=>{if(drawing){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();}});
-  canvas.addEventListener('mouseup', ()=>drawing=false);
-  canvas.addEventListener('mouseout', ()=>drawing=false);
-  ctx.lineWidth=2; ctx.strokeStyle="#000";
-}
-
-// Save report with encryption
+// Save / Backup
 function saveReport(){ 
-  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
-  const report=collectResults();
-  report.client=byId('clientName').value||'—';
-  report.sample=byId('sampleId').value||'—';
-  report.date=byId('reportDate').value||new Date().toLocaleDateString();
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]'); 
+  const report={client:byId('clientName').value||'—',sample:byId('sampleId').value||'—',date:byId('reportDate').value||new Date().toLocaleDateString(),results:collectResults()}; 
   const ciphertext=CryptoJS.AES.encrypt(JSON.stringify(report),ENCRYPT_KEY).toString();
   data.push(ciphertext);
-  localStorage.setItem('labReports',JSON.stringify(data));
-  alert('✅ Report saved with signatures (encrypted).');
+  localStorage.setItem('labReports',JSON.stringify(data)); 
+  alert('✅ Report saved.');
+}
+function showReports(){ 
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]'); 
+  if(!data.length){alert('No saved reports.');return;}
+  let msg=''; 
+  data.forEach((c,i)=>{
+    const r=JSON.parse(CryptoJS.AES.decrypt(c,ENCRYPT_KEY).toString(CryptoJS.enc.Utf8));
+    msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`;
+  });
+  alert(msg);
+}
+function exportBackup(){ 
+  const data=localStorage.getItem('labReports')||'[]'; 
+  const blob=new Blob([data],{type:'application/json'}); 
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='labBackup.json'; a.click();
+}
+function importBackup(file){ 
+  const reader=new FileReader(); 
+  reader.onload=e=>{ localStorage.setItem('labReports',e.target.result); alert('✅ Backup imported.'); }; 
+  reader.readAsText(file);
+}
+async function downloadPDF(){ 
+  const { jsPDF } = window.jspdf; 
+  const doc = new jsPDF('p', 'pt', 'a4'); 
+  await doc.html(byId('reportPreview'),{callback:function(pdf){pdf.save('LabReport.pdf');},x:20,y:20,width:555});
 }
 
-// View saved reports
-function viewReport(index){
-  const data=JSON.parse(localStorage.getItem('labReports')||'[]'); if(!data[index]) return alert('Not found');
-  const decrypted=JSON.parse(CryptoJS.AES.decrypt(data[index],ENCRYPT_KEY).toString(CryptoJS.enc.Utf8));
-  let html=`<h2>${decrypted.client} | ${decrypted.sample} | ${decrypted.date}</h2><table border="1" cellspacing="0" cellpadding="6"><tr><th>Test</th><th>Result</th></tr>`;
-  decrypted.results.forEach(r=>html+=`<tr><td>${r.test}</td><td>${r.result}</td></tr>`);
-  html+='</table>';
-  if(decrypted.techSig) html+=`<h3>Technician Signature</h3><img src="${decrypted.techSig}" style="border:1px dashed #000;width:300px;height:64px"/>`;
-  if(decrypted.clientSig) html+=`<h3>Client Signature</h3><img src="${decrypted.clientSig}" style="border:1px dashed #000;width:300px;height:64px"/>`;
-  const win=window.open('','_blank'); win.document.write(html); win.document.close();
-}
-function showReports(){
-  const data=JSON.parse(localStorage.getItem('labReports')||'[]'); if(!data.length){alert('No saved reports'); return;}
-  let msg=''; data.forEach((c,i)=>{try{const r=JSON.parse(CryptoJS.AES.decrypt(c,ENCRYPT_KEY).toString(CryptoJS.enc.Utf8)); msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`; }catch(e){ msg+=`${i+1}. [Error]\n`; }});
-  const choice=prompt(msg+"\nEnter report number to view:"); const index=parseInt(choice)-1; if(!isNaN(index)) viewReport(index);
-}
-
-// Export / import backup
-function exportBackup(){ const data=localStorage.getItem('labReports')||'[]'; const blob=new Blob([data],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='labBackup.json'; a.click();}
-function importBackup(file){ const reader=new FileReader(); reader.onload=e=>{ localStorage.setItem('labReports',e.target.result); alert('✅ Backup imported.'); }; reader.readAsText(file);}
-
-// PDF download
-async function downloadPDF(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p','pt','a4');
-  const clone=byId('previewCard').cloneNode(true);
-  ['techSig','clientSig'].forEach(id=>{ const canvas=byId(id); if(canvas){ const imgData=canvas.toDataURL(); const el=clone.querySelector('#'+id); if(el){ const img=document.createElement('img'); img.src=imgData; img.style.width=canvas.width+'px'; img.style.height=canvas.height+'px'; el.parentNode.replaceChild(img,el); }}});
-
-  const canvas=await html2canvas(clone,{scale:1.5});
-  const imgData=canvas.toDataURL('image/png');
-  const imgProps=doc.getImageProperties(imgData);
-  const pdfWidth=doc.internal.pageSize.getWidth()-40;
-  const pdfHeight=(imgProps.height*pdfWidth)/imgProps.width;
-  doc.addImage(imgData,'PNG',20,20,pdfWidth,pdfHeight);
-  doc.save('LabReport.pdf');
-}
-
-// --- Events
+// Events
 testsList.addEventListener('change', renderResultInputs);
 byId('btnAddCustom').addEventListener('click',()=>{const val=byId('customTest').value.trim();if(!val)return;const id='t_'+slug(val);const wrap=document.createElement('label');wrap.className='test-item';wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${val}" checked/> ${val}`;testsList.appendChild(wrap);byId('customTest').value='';renderResultInputs();});
 byId('btnUpdate').addEventListener('click',updatePreview);
@@ -306,7 +296,7 @@ byId('btnExport').addEventListener('click',exportBackup);
 byId('importFile').addEventListener('change',e=>importBackup(e.target.files[0]));
 byId('btnDownload').addEventListener('click',downloadPDF);
 
-// --- Init
+// Init
 renderResultInputs();
 updatePreview();
 </script>
