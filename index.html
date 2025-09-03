@@ -1,203 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mobile Lab Mityana — Laboratory Report</title>
-
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <style>
-    :root { --brand:#22c55e; --ink:#0f172a; --muted:#475569; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0; }
-    *{box-sizing:border-box;}
-    body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;color:var(--ink);background:var(--bg);}
-    header{background:var(--brand);color:#fff;padding:12px 18px;}
-    header .title{font-weight:800;}
-    main{max-width:1100px;margin:20px auto;padding:0 16px;display:grid;gap:16px;}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;}
-    h2{margin:0 0 10px;font-size:18px;}
-    .grid{display:grid;gap:10px;}
-    .g2{grid-template-columns:repeat(2,minmax(0,1fr));}
-    .g3{grid-template-columns:repeat(3,minmax(0,1fr));}
-    label small{color:var(--muted);display:block;margin-top:4px;}
-    input[type=text], input[type=number], select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--ink);}
-    textarea{min-height:80px;}
-    .tests{columns:320px;column-gap:18px;}
-    .test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0;}
-    .btns{display:flex;flex-wrap:wrap;gap:8px;}
-    .btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;}
-    .btn.alt{background:#2563eb;}
-    .btn.ghost{background:#0f172a;}
-    .muted{color:var(--muted);}
-    .results-wrap{display:grid;gap:10px;}
-    .result-row{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;align-items:center;}
-    .unit{color:var(--muted);margin-left:6px;font-size:12px;}
-    #previewCard{padding:0;overflow:hidden;}
-    .rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;}
-    .rep-title{font-weight:800;font-size:20px;line-height:1.1;}
-    .rep-sub{color:var(--muted);font-size:12px;}
-    .rep-logo{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover;}
-    .rep-body{padding:16px;}
-    .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
-    .kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
-    .kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
-    table{width:100%;border-collapse:collapse;}
-    th, td{border:1px solid var(--border);padding:10px 12px;text-align:left;}
-    th{background:#f8fafc;}
-    .signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
-    .sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:8px;}
-    .footnote{margin-top:10px;font-size:12px;color:var(--muted);}
-    /* Stamp styles */
-    .stamp{position:relative;width:220px;height:220px;border:5px solid #1e40af;border-radius:50%;color:#1e40af;text-align:center;font-family:"Arial Black",sans-serif;font-weight:bold;margin-top:30px;margin-left:auto;margin-right:0;transform:rotate(-10deg);opacity:0.8;}
-    .stamp-text{position:absolute;top:15px;left:50%;transform:translateX(-50%);font-size:14px;text-transform:uppercase;}
-    .stamp-mid{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-size:11px;}
-    .stamp-tag{position:absolute;top:75px;left:50%;transform:translateX(-50%);font-size:10px;font-style:italic;}
-    .stamp-date{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:12px;line-height:1.3;}
-    @media (max-width:780px){.g2,.g3{grid-template-columns:1fr;}.kv{grid-template-columns:1fr;}.rep-head{grid-template-columns:auto 1fr;}}
-    @media print{@page{size:A4;margin:14mm;}header,.card.form,.btns{display:none !important;}body{background:#fff;}#previewCard{border:none;}}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobile Lab Mityana — Laboratory Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root { --brand:#22c55e; --ink:#0f172a; --muted:#475569; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0; }
+*{box-sizing:border-box;}
+body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;color:var(--ink);background:var(--bg);}
+header{background:var(--brand);color:#fff;padding:12px 18px;}
+header .title{font-weight:800;}
+main{max-width:1100px;margin:20px auto;padding:0 16px;display:grid;gap:16px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;}
+h2{margin:0 0 10px;font-size:18px;}
+.grid{display:grid;gap:10px;}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr));}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+label small{color:var(--muted);display:block;margin-top:4px;}
+input[type=text], input[type=number], select, textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--ink);}
+textarea{min-height:80px;}
+.tests{columns:320px;column-gap:18px;}
+.test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0;}
+.btns{display:flex;flex-wrap:wrap;gap:8px;}
+.btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;}
+.btn.alt{background:#2563eb;}
+.btn.ghost{background:#0f172a;}
+.muted{color:var(--muted);}
+.results-wrap{display:grid;gap:10px;}
+.result-row{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;align-items:center;}
+.unit{color:var(--muted);margin-left:6px;font-size:12px;}
+#previewCard{padding:0;overflow:hidden;}
+.rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;}
+.rep-title{font-weight:800;font-size:20px;line-height:1.1;}
+.rep-sub{color:var(--muted);font-size:12px;}
+.rep-logo{width:56px;height:56px;border-radius:12px;border:1px solid var(--border);object-fit:cover;}
+.rep-body{padding:16px;}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
+.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
+table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+th, td{border:1px solid var(--border);padding:6px 8px;text-align:left;font-size:12px;}
+th{background:#f8fafc;}
+.signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+.sigbox{height:64px;border:1px dashed var(--border);border-radius:10px;padding:8px;}
+.footnote{margin-top:10px;font-size:12px;color:var(--muted);}
+.stamp{border:4px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:250px;font-weight:700;}
+.stamp-date{margin-top:5px;font-size:12px;}
+@media (max-width:780px){.g2,.g3{grid-template-columns:1fr;}.kv{grid-template-columns:1fr;}.rep-head{grid-template-columns:auto 1fr;}}
+@media print{@page{size:A4;margin:14mm;}header,.card.form,.btns{display:none !important;}body{background:#fff;}#previewCard{border:none;}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="title">Mobile Lab Mityana — Laboratory Report System</div>
-  </header>
+<header>
+<div class="title">Mobile Lab Mityana — Laboratory Report System</div>
+</header>
+<main>
+<section class="card form">
+<h2>Client & Sample Details</h2>
+<div class="grid g3">
+<label>Client Name<input id="clientName" type="text" placeholder="e.g., John Doe"/></label>
+<label>Age<input id="age" type="number" placeholder="e.g., 32"/></label>
+<label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
+</div>
+<div class="grid g3" style="margin-top:10px">
+<label>Sample ID<input id="sampleId" type="text" placeholder="e.g., S-2025-001"/></label>
+<label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
+<label>Date (auto)<input id="reportDate" type="text" disabled/></label>
+</div>
+</section>
 
-  <main>
-    <!-- Client & Sample -->
-    <section class="card form">
-      <h2>Client & Sample Details</h2>
-      <div class="grid g3">
-        <label>Client Name<input id="clientName" type="text" placeholder="e.g., John Doe"/></label>
-        <label>Age<input id="age" type="number" placeholder="e.g., 32"/></label>
-        <label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
-      </div>
-      <div class="grid g3" style="margin-top:10px">
-        <label>Sample ID<input id="sampleId" type="text" placeholder="e.g., S-2025-001"/></label>
-        <label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
-        <label>Date (auto)<input id="reportDate" type="text" disabled/></label>
-      </div>
-    </section>
+<section class="card form">
+<h2>Select Tests</h2>
+<div id="testsList" class="tests"></div>
+<div style="margin-top:10px" class="grid g2">
+<label>Add Custom Test<input id="customTest" type="text"/></label>
+<button class="btn" id="btnAddCustom">Add Custom Test</button>
+</div>
+</section>
 
-    <!-- Tests -->
-    <section class="card form">
-      <h2>Select Tests</h2>
-      <div id="testsList" class="tests"></div>
-      <div style="margin-top:10px" class="grid g2">
-        <label>Add Custom Test<input id="customTest" type="text"/></label>
-        <button class="btn" onclick="addCustomTest()">Add Custom Test</button>
-      </div>
-    </section>
+<section class="card form">
+<h2>Enter Results</h2>
+<div id="resultsContainer" class="results-wrap">
+<div class="muted">Tick tests above — their result inputs will appear here.</div>
+</div>
+<div class="btns" style="margin-top:10px">
+<button id="btnUpdate" class="btn">Update Preview</button>
+<button id="btnDownload" class="btn alt">Download PDF</button>
+<button id="btnSave" class="btn ghost">Save Report</button>
+<button id="btnView" class="btn">View Saved Reports</button>
+<button id="btnExport" class="btn">Export Backup</button>
+<label class="btn alt" style="cursor:pointer">Import Backup
+<input type="file" id="importFile" style="display:none"/>
+</label>
+</div>
+</section>
 
-    <!-- Results -->
-    <section class="card form">
-      <h2>Enter Results</h2>
-      <div id="resultsContainer" class="results-wrap">
-        <div class="muted">Tick tests above — their result inputs will appear here.</div>
-      </div>
-      <div class="btns" style="margin-top:10px">
-        <button class="btn" onclick="updatePreview()">Update Preview</button>
-        <button class="btn alt" onclick="downloadPDF()">Download PDF</button>
-        <button class="btn ghost" onclick="saveReport()">Save Report</button>
-        <button class="btn" onclick="showReports()">View Saved Reports</button>
-        <button class="btn" onclick="exportReports()">Export Backup</button>
-        <label class="btn alt" style="cursor:pointer">Import Backup<input type="file" id="importFile" style="display:none" onchange="importReports(event)"/></label>
-      </div>
-    </section>
+<section id="previewCard" class="card">
+<div class="rep-head">
+<img class="rep-logo" src="/mobile-lab-mityana-ug/icons/icon-192.png" alt="Lab Logo"/>
+<div>
+<div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
+<div class="rep-sub">Mityana, Uganda</div>
+</div>
+<div class="muted">Installable PWA</div>
+</div>
+<div class="rep-body" id="reportPreview">
+<p class="muted">Fill details and click <b>Update Preview</b>.</p>
+</div>
+</section>
+</main>
 
-    <!-- Preview -->
-    <section id="previewCard" class="card">
-      <div class="rep-head">
-        <img class="rep-logo" src="/mobile-lab-mityana-ug/icons/icon-192.png" alt="Lab Logo"/>
-        <div>
-          <div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
-          <div class="rep-sub">Mityana, Uganda</div>
-        </div>
-        <div class="muted">Installable PWA</div>
-      </div>
-      <div class="rep-body" id="reportPreview">
-        <p class="muted">Fill details and click <b>Update Preview</b>.</p>
-        <div id="stamp" class="stamp">
-          <div class="stamp-text">Mobile Lab Mityana</div>
-          <div class="stamp-mid">0750992939 / 0778379591</div>
-          <div class="stamp-tag">Diagnosis at your doorstep</div>
-          <div class="stamp-date">Verified<br><span id="stampDate"></span></div>
-        </div>
-      </div>
-    </section>
-  </main>
+<script>
+// ===== CONFIG =====
+const TESTS = ["BAT – Bleeding & Clotting Test","Blood Glucose","Blood Grouping","Blood Smear","Brucella Test",
+"CBC – Complete Blood Count","Chlamydia Test","Electrolytes","Gonorrhea Test","Pregnancy Test (hCG)",
+"Hepatitis B","Hepatitis C","HIV","H. Pylori Serum","H. Pylori Stool","Lipid Profile","Liver Function Test",
+"PSA","Kidney Function Test","Rheumatoid Factor","RPR / Syphilis","Stool Analysis","Urinalysis",
+"Widal Serum","Widal Stool","Gram Staining","DNA","Sickling Test","Malaria"];
 
-  <script>
-    // ====== Config ======
-    const TESTS = ["BAT – Bleeding & Clotting Test","Blood Glucose","Blood Grouping","Blood Smear","Brucella Test","CBC – Complete Blood Count","Chlamydia Test","Electrolytes","Gonorrhea Test","Pregnancy Test (hCG)","Hepatitis B","Hepatitis C","HIV","H. Pylori Serum","H. Pylori Stool","Lipid Profile","Liver Function Test","PSA","Kidney Function Test","Rheumatoid Factor","RPR / Syphilis","Stool Analysis","Urinalysis","Widal Serum","Widal Stool","Gram Staining","DNA","Sickling Test","Malaria"];
-    const CONFIG = {
-      "HIV":{type:"dropdown",options:["Negative","Positive"]},
-      "Malaria":{type:"dropdown",options:["Negative","Positive"]},
-      "Hepatitis B":{type:"dropdown",options:["Negative","Positive"]},
-      "Hepatitis C":{type:"dropdown",options:["Negative","Positive"]},
-      "Pregnancy Test (hCG)":{type:"dropdown",options:["Negative","Positive"]},
-      "Brucella Test":{type:"dropdown",options:["Negative","Positive"]},
-      "H. Pylori Serum":{type:"dropdown",options:["Negative","Positive"]},
-      "H. Pylori Stool":{type:"dropdown",options:["Negative","Positive"]},
-      "RPR / Syphilis":{type:"dropdown",options:["Non-reactive","Reactive"]},
-      "Sickling Test":{type:"dropdown",options:["Negative","Positive"]},
-      "Blood Glucose":{type:"number",unit:"mmol/L"},
-      "CBC – Complete Blood Count":{type:"number",unit:"cells/µL"},
-      "PSA":{type:"number",unit:"ng/mL"},
-      "Liver Function Test":{type:"number",unit:"U/L"},
-      "Kidney Function Test":{type:"number",unit:"mg/dL"},
-      "Electrolytes":{type:"number",unit:"mmol/L"},
-      "Lipid Profile":{type:"number",unit:"mmol/L"},
-      "BAT – Bleeding & Clotting Test":{type:"text",placeholder:"e.g., BT: 2min, CT: 6min"},
-      "Blood Grouping":{type:"text",placeholder:"e.g., O+"},
-      "Blood Smear":{type:"text",placeholder:"Describe findings..."},
-      "Chlamydia Test":{type:"text",placeholder:"Result or notes..."},
-      "Gonorrhea Test":{type:"text",placeholder:"Result or notes..."},
-      "Stool Analysis":{type:"text",placeholder:"Macroscopy/Microscopy..."},
-      "Urinalysis":{type:"text",placeholder:"Appearance, pH, proteins, etc."},
-      "Widal Serum":{type:"text",placeholder:"Titers..."},
-      "Widal Stool":{type:"text",placeholder:"Findings..."},
-      "Gram Staining":{type:"text",placeholder:"Gram +/-, morphology..."},
-      "DNA":{type:"text",placeholder:"Notes..."},
-      "Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative..."}
-    };
+const CONFIG = {
+"HIV":{type:"dropdown",options:["Negative","Positive"]},
+"Malaria":{type:"dropdown",options:["Negative","Positive"]},
+"Hepatitis B":{type:"dropdown",options:["Negative","Positive"]},
+"Hepatitis C":{type:"dropdown",options:["Negative","Positive"]},
+"Pregnancy Test (hCG)":{type:"dropdown",options:["Negative","Positive"]},
+"Brucella Test":{type:"dropdown",options:["Negative","Positive"]},
+"H. Pylori Serum":{type:"dropdown",options:["Negative","Positive"]},
+"H. Pylori Stool":{type:"dropdown",options:["Negative","Positive"]},
+"RPR / Syphilis":{type:"dropdown",options:["Non-reactive","Reactive"]},
+"Sickling Test":{type:"dropdown",options:["Negative","Positive"]},
+"Blood Glucose":{type:"number",unit:"mmol/L"},
+"PSA":{type:"number",unit:"ng/mL"},
+"Liver Function Test":{type:"number",unit:"U/L"},
+"Kidney Function Test":{type:"number",unit:"mg/dL"},
+"Electrolytes":{type:"number",unit:"mmol/L"},
+"Lipid Profile":{type:"number",unit:"mmol/L"},
+"BAT – Bleeding & Clotting Test":{type:"text",placeholder:"e.g., BT: 2min, CT: 6min"},
+"Blood Grouping":{type:"text",placeholder:"e.g., O+"},
+"Blood Smear":{type:"text",placeholder:"Describe findings..."},
+"Chlamydia Test":{type:"text",placeholder:"Result or notes..."},
+"Gonorrhea Test":{type:"text",placeholder:"Result or notes..."},
+"Stool Analysis":{type:"text",placeholder:"Macroscopy/Microscopy..."},
+"Urinalysis":{type:"text",placeholder:"Appearance, pH, proteins, etc."},
+"Widal Serum":{type:"text",placeholder:"Titers..."},
+"Widal Stool":{type:"text",placeholder:"Findings..."},
+"Gram Staining":{type:"text",placeholder:"Gram +/-, morphology..."},
+"DNA":{type:"text",placeholder:"Notes..."},
+"Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative..."},
+"CBC – Complete Blood Count": {
+  type:"group",
+  fields:["RBC","Hb","Hct","MCV","MCH","MCHC","RDW","Retic","WBC","Neut%","Neut#","Lymph%","Lymph#",
+  "Mono%","Mono#","Eos%","Eos#","Baso%","Baso#","IG%","PLT","MPV","PDW","Large PLT","NLR"],
+  unit:""
+}
+};
 
-    // ===== Helpers =====
-    const byId=id=>document.getElementById(id);
-    const slug=s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+// ===== HELPERS =====
+const byId=id=>document.getElementById(id);
+const slug=s=>s.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
 
-    // Populate tests
-    const testsList=byId('testsList');
-    TESTS.forEach(test=>{
-      const id='t_'+slug(test);
-      const wrap=document.createElement('label');
-      wrap.className='test-item';
-      wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${test}"/> ${test}`;
-      testsList.appendChild(wrap);
-    });
+// Populate tests
+const testsList=byId('testsList');
+TESTS.forEach(test=>{
+  const id='t_'+slug(test);
+  const wrap=document.createElement('label');
+  wrap.className='test-item';
+  wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${test}"/> ${test}`;
+  testsList.appendChild(wrap);
+});
 
-    // Auto date
-    const dateEl=byId('reportDate');
-    dateEl.value=new Date().toLocaleDateString();
-    byId('stampDate').innerText=new Date().toLocaleDateString();
+// Auto date
+const dateEl=byId('reportDate');
+dateEl.value=new Date().toLocaleDateString();
 
-    // Dynamic Results
-    testsList.addEventListener('change',renderResultInputs);
-    function addCustomTest(){const input=byId('customTest');const val=(input.value||'').trim();if(!val)return;const id='t_'+slug(val);const wrap=document.createElement('label');wrap.className='test-item';wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${val}" checked/> ${val}`;testsList.appendChild(wrap);input.value='';renderResultInputs();setTimeout(()=>{const f=byId('res_'+slug(val));if(f)f.scrollIntoView({behavior:'smooth',block:'center'});},50);}
-    function renderResultInputs(){const c=byId('resultsContainer');c.innerHTML='';const checked=[...testsList.querySelectorAll('input[type="checkbox"]:checked')];if(!checked.length){c.innerHTML=`<div class="muted">Tick tests above — their result inputs will appear here.</div>`;return;}checked.forEach(cb=>{const t=cb.dataset.test;const cfg=CONFIG[t]||{type:'text'};const row=document.createElement('div');row.className='result-row';const label=document.createElement('div');label.innerHTML=`<b>${t}</b>`;const field=document.createElement('div');let inputHtml='';const baseId='res_'+slug(t);if(cfg.type==='dropdown'){inputHtml=`<select id="${baseId}"><option value="">Select</option>${cfg.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;}else if(cfg.type==='number'){inputHtml=`<div style="display:flex;align-items:center;gap:6px"><input id="${baseId}" type="number" step="any" placeholder="Enter value"/><span class="unit">${cfg.unit||''}</span></div>`;}else{inputHtml=`<input id="${baseId}" type="text" placeholder="${cfg.placeholder||'Enter result'}"/>`;}field.innerHTML=inputHtml;row.appendChild(label);row.appendChild(field);c.appendChild(row);});}
+// ===== DYNAMIC RESULTS =====
+function renderResultInputs(){
+  const container=byId('resultsContainer');
+  container.innerHTML='';
+  const checked=[...testsList.querySelectorAll('input[type="checkbox"]:checked')];
+  if(checked.length===0){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>';return;}
+  checked.forEach(cb=>{
+    const testName=cb.dataset.test;
+    const cfg=CONFIG[testName]||{type:'text'};
+    const row=document.createElement('div');
+    row.className='result-row';
+    const label=document.createElement('div');
+    label.innerHTML=`<b>${testName}</b>`;
+    const field=document.createElement('div');
 
-    function collectResults(){const checked=[...testsList.querySelectorAll('input[type="checkbox"]:checked')];const rows=[];checked.forEach(cb=>{const t=cb.dataset.test;const id='res_'+slug(t);const el=byId(id);let value='';if(el){value=(el.tagName==='SELECT')?el.value:el.value;}const unit=(CONFIG[t]&&CONFIG[t].unit)?` ${CONFIG[t].unit}`:'';rows.push({test:t,result:value+unit});});return rows;}
+    let inputHtml='';
+    const baseId='res_'+slug(testName);
 
-    function updatePreview(){const name=byId('clientName').value||'—';const age=byId('age').value||'—';const gender=byId('gender').value||'—';const sample=byId('sampleId').value||'—';const tech=byId('technician').value||'—';const date=byId('reportDate').value||new Date().toLocaleDateString();const rows=collectResults();const hasRows=rows.length>0;const tableHtml=`<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>${hasRows?rows.map(r=>`<tr><td>${r.test}</td><td>${r.result||'<span class="muted">—</span>'}</td></tr>`).join(''):`<tr><td colspan="2" class="muted">No tests selected</td></tr>`}</tbody></table>`;byId('reportPreview').innerHTML=`<div class="kv"><div><b>Client</b>${name}</div><div><b>Age / Gender</b>${age} / ${gender}</div><div><b>Sample ID</b>${sample}</div><div><b>Date</b>${date}</div></div><h3 style="margin:0 0 8px">Tests Performed</h3>${tableHtml}<div class="signs"><div><b>Technician</b><div class="sigbox">${tech}</div></div><div><b>Signature</b><div class="sigbox"></div></div></div><div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div><div id="stamp" class="stamp"><div class="stamp-text">Mobile Lab Mityana</div><div class="stamp-mid">0750992939 / 0778379591</div><div class="stamp-tag">Diagnosis at your doorstep</div><div class="stamp-date">Verified<br><span id="stampDate">${new Date().toLocaleDateString()}</span></div></div>`;}
+    if(cfg.type==='dropdown'){
+      inputHtml=`<select id="${baseId}"><option value="">Select</option>${cfg.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;
+    }else if(cfg.type==='number'){
+      inputHtml=`<div style="display:flex;align-items:center;gap:6px"><input id="${baseId}" type="number" step="any" placeholder="Enter value"/><span class="unit">${cfg.unit||''}</span></div>`;
+    }else if(cfg.type==='group'){
+      inputHtml='<table><thead><tr>'+cfg.fields.map(f=>`<th>${f}</th>`).join('')+'</tr></thead><tbody><tr>'+cfg.fields.map(f=>`<td><input type="text" id="${baseId+'-'+slug(f)}"/></td>`).join('')+'</tr></tbody></table>';
+    }else{
+      inputHtml=`<input id="${baseId}" type="text" placeholder="${cfg.placeholder||'Enter result'}"/>`;
+    }
+    field.innerHTML=inputHtml;
+    row.appendChild(label);row.appendChild(field);container.appendChild(row);
+  });
+}
 
-    // ===== LocalStorage Reports =====
-    function saveReport(){const reports=JSON.parse(localStorage.getItem('labReports')||'[]');const name=byId('clientName').value||'—';const sample=byId('sampleId').value||'—';const date=byId('reportDate').value||new Date().toLocaleDateString();reports.push({name,sample,date,data:collectResults()});localStorage.setItem('labReports',JSON.stringify(reports));alert('✅ Report saved!');}
-    function showReports(){const reports=JSON.parse(localStorage.getItem('labReports')||'[]');if(!reports.length){alert('No saved reports');return;}let msg='Saved Reports:\\n';reports.forEach((r,i)=>{msg+=`${i+1}. ${r.name} (${r.sample}) - ${r.date}\\n`;});alert(msg);}
-    function exportReports(){const reports=localStorage.getItem('labReports');if(!reports)return alert('No reports to export');const blob=new Blob([reports],{type:"application/json"});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download="labReportsBackup.json";a.click();}
-    function importReports(e){const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=function(){try{const data=JSON.parse(reader.result);localStorage.setItem('labReports',JSON.stringify(data));alert('✅ Backup imported');}catch(err){alert('Invalid file');}};reader.readAsText(f);}
+// Collect results
+function collectResults(){
+  const checked=[...testsList.querySelectorAll('input[type="checkbox"]:checked')];
+  const rows=[];
+  checked.forEach(cb=>{
+    const testName=cb.dataset.test;
+    const cfg=CONFIG[testName]||{type:'text'};
+    if(cfg.type==='group'){
+      const values=cfg.fields.map(f=>{
+        const el=byId('res_'+slug(testName)+'-'+slug(f));
+        return el?el.value||'':'';
+      });
+      rows.push({test:testName,result:values.map((v,i)=>cfg.fields[i]+': '+(v||'—')).join('<br>')});
+    }else{
+      const el=byId('res_'+slug(testName));
+      let val='';
+      if(el){val=el.value||''; if(cfg.unit) val+=' '+cfg.unit;}
+      rows.push({test:testName,result:val||'<span class="muted">—</span>'});
+    }
+  });
+  return rows;
+}
 
-    // ===== PDF =====
-    async function downloadPDF(){updatePreview();const { jsPDF } = window.jspdf; const doc = new jsPDF(); await doc.html(byId('reportPreview'),{x:10,y:10,width:190,windowWidth:800});const client=byId('clientName').value||'Client';const sample=byId('sampleId').value||'Sample';doc.save(`${client}-${sample}.pdf`);}
-  </script>
+// ===== UPDATE PREVIEW =====
+function updatePreview(){
+  const name=byId('clientName').value||'—';
+  const age=byId('age').value||'—';
+  const gender=byId('gender').value||'—';
+  const sample=byId('sampleId').value||'—';
+  const tech=byId('technician').value||'—';
+  const date=byId('reportDate').value||new Date().toLocaleDateString();
+  const rows=collectResults();
+  const tableHtml=rows.length>0?'<table><thead><tr><th style="width:55%">Test</th><th>Result</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${r.test}</td><td>${r.result}</td></tr>`).join('')+'</tbody></table>':'<div class="muted">No tests selected</div>';
+  byId('reportPreview').innerHTML=`<div class="kv">
+    <div><b>Client</b>${name}</div>
+    <div><b>Age / Gender</b>${age} / ${gender}</div>
+    <div><b>Sample ID</b>${sample}</div>
+    <div><b>Date</b>${date}</div>
+  </div>
+  <h3 style="margin:0 0 8px">Tests Performed</h3>
+  ${tableHtml}
+  <div class="signs">
+    <div><b>Technician</b><div class="sigbox">${tech}</div></div>
+    <div><b>Signature</b><div class="sigbox"></div></div>
+  </div>
+  <div class="stamp">
+    Mobile Lab Mityana<br>
+    0750992939 / 0778379591<br>
+    Diagnosis at your doorstep<br>
+    <span class="stamp-date">${new Date().toLocaleDateString()}</span>
+  </div>
+  <div class="footnote">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>`;
+}
+
+// ===== SAVE / VIEW / EXPORT =====
+function saveReport(){
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
+  data.push({
+    client:byId('clientName').value||'—',
+    date:new Date().toLocaleDateString(),
+    sample:byId('sampleId').value||'—',
+    html:byId('reportPreview').innerHTML
+  });
+  localStorage.setItem('labReports',JSON.stringify(data));
+  alert('✅ Report saved locally.');
+}
+
+function showReports(){
+  const data=JSON.parse(localStorage.getItem('labReports')||'[]');
+  if(!data.length){alert('No saved reports.');return;}
+  let msg='';
+  data.forEach((r,i)=>msg+=`${i+1}. ${r.client} | ${r.sample} | ${r.date}\n`);
+  alert(msg);
+}
+
+function exportBackup(){
+  const data=localStorage.getItem('labReports')||'[]';
+  const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='labBackup.json';
+  a.click();
+}
+
+function importBackup(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    localStorage.setItem('labReports',e.target.result);
+    alert('✅ Backup imported.');
+  };
+  reader.readAsText(file);
+}
+
+// ===== PDF =====
+async function downloadPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'pt', 'a4');
+  await doc.html(byId('reportPreview'),{
+    callback:function(pdf){pdf.save('LabReport.pdf');},
+    x:20,y:20,width:555
+  });
+}
+
+// ===== EVENTS =====
+testsList.addEventListener('change', renderResultInputs);
+byId('btnAddCustom').addEventListener('click', ()=>{
+  const val=byId('customTest').value.trim();
+  if(!val)return;
+  const id='t_'+slug(val);
+  const wrap=document.createElement('label');
+  wrap.className='test-item';
+  wrap.innerHTML=`<input type="checkbox" id="${id}" data-test="${val}" checked/> ${val}`;
+  testsList.appendChild(wrap);
+  byId('customTest').value='';
+  renderResultInputs();
+});
+byId('btnUpdate').addEventListener('click', updatePreview);
+byId('btnSave').addEventListener('click', saveReport);
+byId('btnView').addEventListener('click', showReports);
+byId('btnExport').addEventListener('click', exportBackup);
+byId('importFile').addEventListener('change', e=>importBackup(e.target.files[0]));
+byId('btnDownload').addEventListener('click', downloadPDF);
+
+// Init
+renderResultInputs();
+updatePreview();
+</script>
 </body>
 </html>
