@@ -1,70 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mobile Lab Mityana — Laboratory Report</title>
-
-<!-- jsPDF for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
-:root{
-  --brand:#22c55e; --ink:#0f172a; --muted:#64748b; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--ink);background:var(--bg)}
-header{background:var(--brand);color:#fff;padding:12px 18px}
-header .title{font-weight:800}
-main{max-width:1100px;margin:20px auto;padding:0 16px;display:grid;gap:16px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
-h2{margin:0 0 10px;font-size:18px}
-.grid{display:grid;gap:10px}
-.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-label small{color:var(--muted);display:block;margin-top:4px}
-input[type=text], input[type=number], select, textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink)}
-textarea{min-height:90px}
-.tests{columns:320px;column-gap:16px}
-.test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0}
-.btns{display:flex;flex-wrap:wrap;gap:8px}
-.btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
-.btn.alt{background:#2563eb}
-.btn.ghost{background:#0f172a}
-.muted{color:var(--muted)}
-.results-wrap{display:grid;gap:10px}
-.result-row{margin-bottom:12px}
-.unit{color:var(--muted);margin-left:6px;font-size:12px}
-#previewCard{padding:0;overflow:hidden}
-.rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
-.rep-title{font-weight:800;font-size:20px;line-height:1.05}
-.rep-sub{color:var(--muted);font-size:12px}
-.rep-logo{width:64px;height:64px;border-radius:10px;border:1px solid var(--border);object-fit:cover;background:#fff}
-.rep-body{padding:16px}
-.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px}
-.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px}
-.kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:13px}
-th, td{border:1px solid var(--border);padding:6px 8px;text-align:center;vertical-align:middle}
-th{background:#f8fafc;font-weight:700}
-tbody tr:nth-child(even){background:#fbfdff}
-.signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-.sigbox{height:64px;border:1px dashed var(--border);border-radius:8px;padding:8px}
-.footnote{margin-top:10px;font-size:12px;color:var(--muted)}
-.stamp{border:3px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:260px;font-weight:700}
-.stamp-date{margin-top:6px;font-size:12px}
-@media (max-width:780px){
-  .g2,.g3{grid-template-columns:1fr}
-  .kv{grid-template-columns:1fr}
-  .rep-head{grid-template-columns:auto 1fr}
-}
-
-/* print */
-@media print{
-  header,.card.form,.btns{display:none !important}
-  body{background:#fff}
-  #previewCard{border:none}
-}
+:root{--brand:#22c55e;--ink:#0f172a;--muted:#64748b;--bg:#f1f5f9;--card:#fff;--border:#e2e8f0;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--ink);background:var(--bg);}
+header{background:var(--brand);color:#fff;padding:12px 18px;}
+header .title{font-weight:800;}
+main{max-width:1100px;margin:20px auto;padding:0 16px;display:grid;gap:16px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
+h2{margin:0 0 10px;font-size:18px;}
+.grid{display:grid;gap:10px;}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr));}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+label small{color:var(--muted);display:block;margin-top:4px;}
+input[type=text], input[type=number], select, textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);}
+textarea{min-height:90px;}
+.tests{columns:320px;column-gap:16px;}
+.test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0;cursor:pointer;}
+.btns{display:flex;flex-wrap:wrap;gap:8px;}
+.btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;}
+.btn.alt{background:#2563eb;}
+.btn.ghost{background:#0f172a;}
+.muted{color:var(--muted);}
+.results-wrap{display:grid;gap:10px;}
+.result-row{margin-bottom:12px;}
+.unit{color:var(--muted);margin-left:6px;font-size:12px;}
+#previewCard{padding:0;overflow:hidden;}
+.rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;}
+.rep-title{font-weight:800;font-size:20px;line-height:1.05;}
+.rep-sub{color:var(--muted);font-size:12px;}
+.rep-logo{width:64px;height:64px;border-radius:10px;border:1px solid var(--border);object-fit:cover;background:#fff;}
+.rep-body{padding:16px;}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px;}
+.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px;}
+.kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;}
+table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:13px;}
+th, td{border:1px solid var(--border);padding:6px 8px;text-align:center;vertical-align:middle;}
+th{background:#f8fafc;font-weight:700;}
+tbody tr:nth-child(even){background:#fbfdff;}
+.signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+.sigbox{height:64px;border:1px dashed var(--border);border-radius:8px;padding:8px;}
+.footnote{margin-top:10px;font-size:12px;color:var(--muted);}
+.stamp{border:3px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:260px;font-weight:700;}
+.stamp-date{margin-top:6px;font-size:12px;}
+@media (max-width:780px){.g2,.g3{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.rep-head{grid-template-columns:auto 1fr}}
+@media print{header,.card.form,.btns{display:none !important} body{background:#fff} #previewCard{border:none}}
 </style>
 </head>
 <body>
@@ -74,94 +59,121 @@ tbody tr:nth-child(even){background:#fbfdff}
 </header>
 
 <main>
-  <!-- Client & Sample -->
   <section class="card form">
     <h2>Client & Sample Details</h2>
     <div class="grid g3">
-      <label>Client Name<input id="clientName" type="text" placeholder="e.g., Jane Doe"/></label>
-      <label>Age<input id="age" type="number" /></label>
+      <label>Client Name<input id="clientName" type="text" placeholder="Jane Doe"/></label>
+      <label>Age<input id="age" type="number"/></label>
       <label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
     </div>
-
     <div class="grid g3" style="margin-top:10px">
-      <label>Lab ID (auto)<input id="sampleId" type="text" disabled/></label>
-      <label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
+      <label>Lab ID<input id="sampleId" type="text" disabled/></label>
+      <label>Technician<select id="technician"><option value="">Select</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
       <label>Date<input id="reportDate" type="text" disabled/></label>
     </div>
   </section>
 
-  <!-- Select Tests grouped -->
   <section class="card form">
     <h2>Select Tests (by category)</h2>
     <div class="grid g2">
-      <div class="card" style="padding:12px">
-        <h3 style="margin:0 0 8px">Hematology</h3>
-        <div class="tests" id="tests-hematology"></div>
-      </div>
-      <div class="card" style="padding:12px">
-        <h3 style="margin:0 0 8px">Biochemistry</h3>
-        <div class="tests" id="tests-biochemistry"></div>
-      </div>
-      <div class="card" style="padding:12px">
-        <h3 style="margin:0 0 8px">Serology / Immunology</h3>
-        <div class="tests" id="tests-serology"></div>
-      </div>
-      <div class="card" style="padding:12px">
-        <h3 style="margin:0 0 8px">Infectious Diseases</h3>
-        <div class="tests" id="tests-infectious"></div>
-      </div>
-      <div class="card" style="padding:12px">
-        <h3 style="margin:0 0 8px">Microbiology & Other</h3>
-        <div class="tests" id="tests-other"></div>
-      </div>
-      <div class="card" style="padding:12px">
-        <h3 style="margin:0 0 8px">Electrolytes & Panels</h3>
-        <div class="tests" id="tests-panels"></div>
-      </div>
+      <div class="card" style="padding:12px"><h3>Hematology</h3><div class="tests" id="tests-hematology"></div></div>
+      <div class="card" style="padding:12px"><h3>Biochemistry</h3><div class="tests" id="tests-biochemistry"></div></div>
+      <div class="card" style="padding:12px"><h3>Serology / Immunology</h3><div class="tests" id="tests-serology"></div></div>
+      <div class="card" style="padding:12px"><h3>Infectious Diseases</h3><div class="tests" id="tests-infectious"></div></div>
+      <div class="card" style="padding:12px"><h3>Microbiology & Other</h3><div class="tests" id="tests-other"></div></div>
+      <div class="card" style="padding:12px"><h3>Electrolytes & Panels</h3><div class="tests" id="tests-panels"></div></div>
     </div>
   </section>
 
-  <!-- Results -->
   <section class="card form">
     <h2>Enter Results</h2>
-    <div id="resultsContainer" class="results-wrap">
-      <div class="muted">Tick tests above — their result inputs will appear here.</div>
-    </div>
-
+    <div id="resultsContainer" class="results-wrap"><div class="muted">Tick tests above — results will appear here.</div></div>
     <div class="btns" style="margin-top:10px">
       <button id="btnUpdate" class="btn">Update Preview</button>
       <button id="btnDownload" class="btn alt">Download PDF</button>
       <button id="btnSave" class="btn ghost">Save Report</button>
       <button id="btnView" class="btn">View Saved Reports</button>
       <button id="btnExport" class="btn">Export Backup</button>
-      <label class="btn alt" style="cursor:pointer">Import Backup
-        <input type="file" id="importFile" style="display:none"/>
-      </label>
+      <label class="btn alt" style="cursor:pointer">Import Backup<input type="file" id="importFile" style="display:none"/></label>
     </div>
   </section>
 
-  <!-- Preview / Printable -->
   <section id="previewCard" class="card">
     <div class="rep-head">
-      <img class="rep-logo" id="logoImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=" alt="Lab Logo"/>
-      <div>
-        <div class="rep-title">Mobile Lab Mityana – Laboratory Report</div>
-        <div class="rep-sub">Mityana, Uganda</div>
-      </div>
+      <img class="rep-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=">
+      <div><div class="rep-title">Mobile Lab Mityana – Laboratory Report</div><div class="rep-sub">Mityana, Uganda</div></div>
       <div class="muted">Installable PWA</div>
     </div>
-
-    <div class="rep-body" id="reportPreview">
-      <p class="muted">Fill details and click <b>Update Preview</b>.</p>
-    </div>
+    <div class="rep-body" id="reportPreview"><p class="muted">Fill details and click <b>Update Preview</b>.</p></div>
   </section>
 </main>
 
 <script>
-// --- JS code as provided previously, fully functional ---
-// Include everything from your last script: test population, CBC, result inputs,
-// autosave, draft recovery, save, view, export, import, PDF download, etc.
-// For brevity, reuse the previous script entirely here.
+// ---------------------- JS ----------------------
+const testCategories = {
+  "Hematology": ["CBC", "RBC", "Hb", "Hct", "MCV", "MCH", "MCHC", "RDW", "Platelets", "WBC"],
+  "Biochemistry": ["Blood Glucose", "Liver Function", "Kidney Function", "Lipid Profile", "Electrolytes"],
+  "Serology": ["HIV", "Hepatitis B", "Hepatitis C", "Pregnancy hCG", "RPR", "RF"],
+  "Infectious": ["Malaria", "Brucella", "Chlamydia", "Gonorrhea", "H. Pylori"],
+  "Microbiology": ["Blood Smear", "Stool Analysis", "Urine Analysis", "Sputum Culture"],
+  "Panels": ["Full Electrolytes", "Kidney Panel", "Liver Panel"]
+};
+
+// Populate tests dynamically
+for(let cat in testCategories){
+  const container = document.getElementById("tests-" + cat.toLowerCase().replace(/ /g,""));
+  testCategories[cat].forEach(test=>{
+    const div = document.createElement("div");
+    div.className = "test-item";
+    div.innerHTML = `<input type="checkbox" class="test-checkbox" data-test="${test}" id="${test}"/><label for="${test}">${test}</label>`;
+    container.appendChild(div);
+  });
+}
+
+// Show result inputs
+function updateResultsInputs(){
+  const container = document.getElementById("resultsContainer");
+  container.innerHTML = "";
+  document.querySelectorAll(".test-checkbox:checked").forEach(cb=>{
+    const row = document.createElement("div");
+    row.className = "result-row";
+    row.innerHTML = `<label>${cb.dataset.test}: <input type="text" class="result-input" data-test="${cb.dataset.test}"></label>`;
+    container.appendChild(row);
+  });
+}
+
+// Update preview
+function updatePreview(){
+  const name = document.getElementById("clientName").value;
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
+  const tech = document.getElementById("technician").value;
+  const date = new Date().toLocaleDateString();
+  const results = {};
+  document.querySelectorAll(".result-input").forEach(inp=>results[inp.dataset.test]=inp.value);
+  let html = `<div class="kv"><div><b>Client Name</b>${name}</div><div><b>Age / Gender</b>${age} / ${gender}</div></div>`;
+  html += `<div class="kv"><div><b>Lab ID</b>LAB-${Date.now()}</div><div><b>Technician</b>${tech}</div></div>`;
+  html += "<table><thead><tr><th>Test</th><th>Result</th></tr></thead><tbody>";
+  for(let t in results) html += `<tr><td>${t}</td><td>${results[t]}</td></tr>`;
+  html += "</tbody></table>";
+  html += `<div class="stamp">Authorized Signature<div class="stamp-date">${date}</div></div>`;
+  document.getElementById("reportPreview").innerHTML = html;
+}
+
+// PDF Download
+document.getElementById("btnDownload").addEventListener("click",()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p','pt','a4');
+  doc.html(document.getElementById("previewCard"),{
+    callback:function(pdf){pdf.save("LabReport.pdf");},
+    x:20,y:20,width:555
+  });
+});
+
+// Event listeners
+document.querySelectorAll(".test-checkbox").forEach(cb=>cb.addEventListener("change",updateResultsInputs));
+document.getElementById("btnUpdate").addEventListener("click",updatePreview);
 </script>
+
 </body>
 </html>
