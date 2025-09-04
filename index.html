@@ -1,239 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile Lab Mityana — Lab System</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mobile Lab Mityana — Laboratory Report System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f5f5f5;color:#333}
-header{background:#005f73;color:#fff;padding:10px;text-align:center;font-size:1.5em;font-weight:bold}
-.container{display:flex;flex-wrap:wrap;padding:10px;gap:20px}
-.left,.right{background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
-.left{flex:1 1 350px;max-width:400px;overflow:auto;max-height:90vh}
-.right{flex:2 1 600px;max-height:90vh;overflow:auto}
-h2{margin-top:0;color:#0a9396}
-label.test-item{display:block;margin:4px 0}
-.result-row{margin:6px 0}
-.result-row input, .result-row select, .result-row textarea{width:100%;padding:4px;margin-top:2px;border-radius:4px;border:1px solid #ccc}
-button{background:#0a9396;color:#fff;border:none;padding:6px 12px;margin:2px;border-radius:4px;cursor:pointer}
-button:hover{background:#007f7f}
-.table-container{overflow:auto}
-table{width:100%;border-collapse:collapse;margin:10px 0}
-table th, table td{border:1px solid #ccc;padding:4px;text-align:left}
-.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-.tab{padding:6px 12px;background:#94d2bd;border-radius:4px;cursor:pointer}
-.tab.active{background:#0a9396;color:#fff}
-.collapsible{margin-bottom:10px}
-.collapsible h3{margin:0;padding:6px;background:#ee9b00;color:#fff;border-radius:4px;cursor:pointer}
-.collapsible .content{display:none;padding:6px;background:#fff;border-radius:0 0 4px 4px;margin-top:2px;max-height:200px;overflow:auto}
-.kv{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-.kv div{flex:1 1 120px;background:#edf6f9;padding:6px;border-radius:4px}
-.signs{display:flex;gap:20px;margin-top:10px}
-.sigbox{border:1px solid #ccc;height:50px;padding:4px}
-.stamp{margin-top:10px;background:#94d2bd;color:#fff;padding:6px;border-radius:4px;position:relative}
-.stamp-date{position:absolute;top:6px;right:6px;font-size:0.8em}
-.muted{color:#555;font-size:0.9em}
+:root{--brand:#22c55e;--ink:#0f172a;--muted:#64748b;--bg:#f1f5f9;--card:#fff;--border:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg)}
+header{background:var(--brand);color:#fff;padding:12px 18px}header .title{font-weight:800}
+main{max-width:1100px;margin:20px auto;padding:0 16px;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+h2{margin:0 0 10px;font-size:18px}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+label small{color:var(--muted);display:block;margin-top:4px}
+input[type=text],input[type=number],select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:90px}
+.tests{columns:320px;column-gap:16px}
+.test-item{break-inside:avoid;display:flex;align-items:center;gap:8px;margin:6px 0;cursor:pointer}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{background:var(--brand);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+.btn.alt{background:#2563eb}
+.btn.ghost{background:#0f172a}
+.muted{color:var(--muted)}
+.results-wrap{display:grid;gap:10px}
+.result-row{margin-bottom:12px}
+.unit{color:var(--muted);margin-left:6px;font-size:12px}
+#previewCard{padding:0;overflow:hidden}
+.rep-head{padding:16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
+.rep-title{font-weight:800;font-size:20px;line-height:1.05}
+.rep-sub{color:var(--muted);font-size:12px}
+.rep-logo{width:64px;height:64px;border-radius:10px;border:1px solid var(--border);object-fit:cover;background:#fff}
+.rep-body{padding:16px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:12px}
+.kv div{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px}
+.kv b{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:13px}
+th,td{border:1px solid var(--border);padding:6px 8px;text-align:center;vertical-align:middle}
+th{background:#f8fafc;font-weight:700}
+tbody tr:nth-child(even){background:#fbfdff}
+.signs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.sigbox{height:64px;border:1px dashed var(--border);border-radius:8px;padding:8px}
+.footnote{margin-top:10px;font-size:12px;color:var(--muted)}
+.stamp{border:3px solid #1e40af;color:#1e40af;padding:8px;text-align:center;margin-top:20px;border-radius:6px;width:260px;font-weight:700}
+.stamp-date{margin-top:6px;font-size:12px}
+@media (max-width:780px){.g2,.g3{grid-template-columns:1fr}.kv{grid-template-columns:1fr}.rep-head{grid-template-columns:auto 1fr}}
+@media print{@page{size:A4;margin:14mm}header,.card.form,.btns{display:none !important}body{background:#fff}#previewCard{border:none}}
 </style>
 </head>
 <body>
-<header>Mobile Lab Mityana — Lab System</header>
-<div class="container">
-<div class="left">
-<h2>Patient & Tests</h2>
-<div>
-<label>Name: <input id="clientName"/></label>
-<label>Age: <input id="age" type="number"/></label>
-<label>Gender: 
-<select id="gender">
-<option value="">Select</option>
-<option>Male</option>
-<option>Female</option>
-<option>Other</option>
-</select>
-</label>
-<label>Lab ID: <input id="sampleId" readonly/></label>
-<label>Date: <input id="reportDate" type="date"/></label>
-<label>Technician: <input id="technician"/></label>
+<header><div class="title">Mobile Lab Mityana — Laboratory Report System</div></header>
+<main>
+<section class="card form">
+<h2>Client & Sample Details</h2>
+<div class="grid g3">
+<label>Client Name<input id="clientName" type="text" placeholder="e.g., Jane Doe"/></label>
+<label>Age<input id="age" type="number"/></label>
+<label>Gender<select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></label>
 </div>
+<div class="grid g3" style="margin-top:10px">
+<label>Lab ID (auto)<input id="sampleId" type="text" disabled/></label>
+<label>Technician<select id="technician"><option value="">Select Technician</option><option>Maweda Edrine</option><option>Matovu Timothy</option></select></label>
+<label>Date<input id="reportDate" type="text" disabled/></label>
+</div>
+</section>
 
-<div class="tabs">
-<div class="tab active" data-group="hematology">Hematology</div>
-<div class="tab" data-group="biochemistry">Biochemistry</div>
-<div class="tab" data-group="serology">Serology</div>
-<div class="tab" data-group="infectious">Infectious</div>
-<div class="tab" data-group="other">Other</div>
-<div class="tab" data-group="panels">Panels</div>
+<section class="card form">
+<h2>Select Tests (by category)</h2>
+<div class="grid g2">
+<div class="card" style="padding:12px"><h3 style="margin:0 0 8px">Hematology</h3><div class="tests" id="tests-hematology"></div></div>
+<div class="card" style="padding:12px"><h3 style="margin:0 0 8px">Biochemistry</h3><div class="tests" id="tests-biochemistry"></div></div>
+<div class="card" style="padding:12px"><h3 style="margin:0 0 8px">Serology / Immunology</h3><div class="tests" id="tests-serology"></div></div>
+<div class="card" style="padding:12px"><h3 style="margin:0 0 8px">Infectious Diseases</h3><div class="tests" id="tests-infectious"></div></div>
+<div class="card" style="padding:12px"><h3 style="margin:0 0 8px">Microbiology & Other</h3><div class="tests" id="tests-other"></div></div>
+<div class="card" style="padding:12px"><h3 style="margin:0 0 8px">Electrolytes & Panels</h3><div class="tests" id="tests-panels"></div></div>
 </div>
+</section>
 
-<div id="testsContainer"></div>
-<hr>
-<button id="btnUpdate">Update Preview</button>
-<button id="btnSave">Save Report</button>
-<button id="btnView">View Reports</button>
-<button id="btnDownload">Download PDF</button>
-<div id="reportsContainer"></div>
+<section class="card form">
+<h2>Enter Results</h2>
+<div id="resultsContainer" class="results-wrap">
+<div class="muted">Tick tests above — their result inputs will appear here.</div>
 </div>
+<div class="btns" style="margin-top:10px">
+<button id="btnUpdate" class="btn">Update Preview</button>
+<button id="btnDownload" class="btn alt">Download PDF</button>
+<button id="btnSave" class="btn ghost">Save Report</button>
+<button id="btnView" class="btn">View Saved Reports</button>
+<button id="btnExport" class="btn">Export Backup</button>
+<label class="btn alt" style="cursor:pointer">Import Backup<input type="file" id="importFile" style="display:none"/></label>
+</div>
+</section>
 
-<div class="right">
-<h2>Report Preview</h2>
-<div id="resultsContainer"><div class="muted">Tick tests to display inputs here.</div></div>
-<div id="previewContainer"></div>
+<section id="previewCard" class="card">
+<div class="rep-head">
+<img class="rep-logo" id="logoImg" src="icons/logo.png" alt="Lab Logo" onerror="this.onerror=null;this.src=window.__logoFallback;">
+<div><div class="rep-title">Mobile Lab Mityana – Laboratory Report</div><div class="rep-sub">Mityana, Uganda</div></div>
+<div class="muted">Installable PWA</div>
 </div>
-</div>
+<div class="rep-body" id="reportPreview"><p class="muted">Fill details and click <b>Update Preview</b>.</p></div>
+</section>
+</main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
-const byId=id=>document.getElementById(id);
-const slug=s=>(s||'').toString().trim().replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+window.__logoFallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=";
 
-const GROUPS={hematology:["CBC – Complete Blood Count","BAT – Bleeding & Clotting Test","Blood Smear","Sickling Test"],
+const GROUPS={
+hematology:["CBC – Complete Blood Count","BAT – Bleeding & Clotting Test","Blood Smear","Sickling Test"],
 biochemistry:["Blood Glucose","Lipid Profile","Liver Function Test","Kidney Function Test","PSA"],
 serology:["Pregnancy Test (hCG)","Rheumatoid Factor","RPR / Syphilis","H. Pylori Serum","H. Pylori Stool"],
 infectious:["HIV","Hepatitis B","Hepatitis C","Brucella Test","Chlamydia Test","Gonorrhea Test","Malaria"],
 other:["Blood Grouping","Stool Analysis","Urinalysis","Widal Serum","Widal Stool","Gram Staining","DNA"],
-panels:["Electrolytes"]};
+panels:["Electrolytes"]
+};
 
 const CBC_FIELDS=["WBC","RBC","HBG","HCT","MCV","MCH","MCHC","PLT","LY","MO","GR","RDW-CV","RDW-SD","PCT","MPV","PDW","P-LCR"];
-const CBC_UNITS={"WBC":"10⁹/L","RBC":"10¹²/L","HBG":"g/dL","HCT":"%","MCV":"fL","MCH":"pg","MCHC":"g/dL","PLT":"10⁹/L",
-"LY":"%","MO":"%","GR":"%","RDW-CV":"%","RDW-SD":"fL","PCT":"%","MPV":"fL","PDW":"fL","P-LCR":"%"};
+const CBC_UNITS={"WBC":"10⁹/L","RBC":"10¹²/L","HBG":"g/dL","HCT":"%","MCV":"fL","MCH":"pg","MCHC":"g/dL","PLT":"10⁹/L","LY":"%","MO":"%","GR":"%","RDW-CV":"%","RDW-SD":"fL","PCT":"%","MPV":"fL","PDW":"fL","P-LCR":"%"};
 
-const CONFIG={"CBC – Complete Blood Count":{type:"cbc"},
-"HIV":{type:"dropdown",options:["Negative","Positive"]},"Malaria":{type:"dropdown",options:["Negative","Positive"]},
-"Hepatitis B":{type:"dropdown",options:["Negative","Positive"]},"Hepatitis C":{type:"dropdown",options:["Negative","Positive"]},
-"Pregnancy Test (hCG)":{type:"dropdown",options:["Negative","Positive"]},"Brucella Test":{type:"dropdown",options:["Negative","Positive"]},
-"H. Pylori Serum":{type:"dropdown",options:["Negative","Positive"]},"H. Pylori Stool":{type:"dropdown",options:["Negative","Positive"]},
-"RPR / Syphilis":{type:"dropdown",options:["Non-reactive","Reactive"]},"Sickling Test":{type:"dropdown",options:["Negative","Positive"]},
-"Blood Glucose":{type:"number",unit:"mmol/L"},"PSA":{type:"number",unit:"ng/mL"},"Blood Grouping":{type:"text",placeholder:"e.g., O+"},
-"BAT – Bleeding & Clotting Test":{type:"text",placeholder:"BT: 2 min; CT: 6 min"},"Blood Smear":{type:"text",placeholder:"Morphology / comments"},
-"Chlamydia Test":{type:"text",placeholder:"Result / notes"},"Gonorrhea Test":{type:"text",placeholder:"Result / notes"},"Stool Analysis":{type:"text",placeholder:"Macroscopy / Microscopy"},
-"Urinalysis":{type:"text",placeholder:"Appearance, pH, proteins, etc."},"Widal Serum":{type:"text",placeholder:"Titers..."},"Widal Stool":{type:"text",placeholder:"Findings..."},
-"Gram Staining":{type:"text",placeholder:"Gram +/-; morphology..."},"DNA":{type:"text",placeholder:"Notes..."},"Electrolytes":{type:"textarea",placeholder:"Na⁺ / K⁺ / Cl⁻ / HCO₃⁻ etc."},
-"Lipid Profile":{type:"textarea",placeholder:"TC, HDL, LDL, TG ..."},"Liver Function Test":{type:"textarea",placeholder:"ALT, AST, ALP, TBil ..."},
-"Kidney Function Test":{type:"textarea",placeholder:"Urea, Creatinine ..."},"Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative"}};
+const CONFIG={
+"CBC – Complete Blood Count":{type:"cbc"},
+"HIV":{type:"dropdown",options:["Negative","Positive"]},
+"Malaria":{type:"dropdown",options:["Negative","Positive"]},
+"Hepatitis B":{type:"dropdown",options:["Negative","Positive"]},
+"Hepatitis C":{type:"dropdown",options:["Negative","Positive"]},
+"Pregnancy Test (hCG)":{type:"dropdown",options:["Negative","Positive"]},
+"Brucella Test":{type:"dropdown",options:["Negative","Positive"]},
+"H. Pylori Serum":{type:"dropdown",options:["Negative","Positive"]},
+"H. Pylori Stool":{type:"dropdown",options:["Negative","Positive"]},
+"RPR / Syphilis":{type:"dropdown",options:["Non-reactive","Reactive"]},
+"Sickling Test":{type:"dropdown",options:["Negative","Positive"]},
+"Blood Glucose":{type:"number",unit:"mmol/L"},
+"PSA":{type:"number",unit:"ng/mL"},
+"Blood Grouping":{type:"text",placeholder:"e.g., O+"},
+"BAT – Bleeding & Clotting Test":{type:"text",placeholder:"BT: 2 min; CT: 6 min"},
+"Blood Smear":{type:"text",placeholder:"Morphology / comments"},
+"Chlamydia Test":{type:"text",placeholder:"Result / notes"},
+"Gonorrhea Test":{type:"text",placeholder:"Result / notes"},
+"Stool Analysis":{type:"text",placeholder:"Macroscopy / Microscopy"},
+"Urinalysis":{type:"text",placeholder:"Appearance, pH, proteins, etc."},
+"Widal Serum":{type:"text",placeholder:"Titers..."},
+"Widal Stool":{type:"text",placeholder:"Findings..."},
+"Gram Staining":{type:"text",placeholder:"Gram +/-; morphology..."},
+"DNA":{type:"text",placeholder:"Notes..."},
+"Electrolytes":{type:"textarea",placeholder:"Na⁺ / K⁺ / Cl⁻ / HCO₃⁻ etc."},
+"Lipid Profile":{type:"textarea",placeholder:"TC, HDL, LDL, TG ..."},
+"Liver Function Test":{type:"textarea",placeholder:"ALT, AST, ALP, TBil ..."},
+"Kidney Function Test":{type:"textarea",placeholder:"Urea, Creatinine ..."},
+"Rheumatoid Factor":{type:"text",placeholder:"Value or qualitative"}
+};
 
-/* ---------- Tabs ---------- */
-document.querySelectorAll('.tab').forEach(tab=>{
-tab.addEventListener('click',()=>{
-document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-tab.classList.add('active'); showGroupTests(tab.dataset.group);
-});
-});
+function byId(id){return document.getElementById(id);}
+function slug(s){return (s||'').toString().trim().replace(/[^a-z0-9]+/gi,'-').toLowerCase();}
+function toId(s){return slug(s).replace(/^-+|-+$/g,'');}
+function escapeHtml(s){if(s===undefined||s===null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* ---------- Populate Group Tests ---------- */
-function showGroupTests(group){
-const container=byId('testsContainer'); container.innerHTML='';
-GROUPS[group].forEach(test=>{
-const wrap=document.createElement('label'); wrap.className='test-item';
-wrap.innerHTML=`<input type="checkbox" data-test="${test}"/> ${test}`;
-container.appendChild(wrap);
-wrap.querySelector('input').addEventListener('change',renderResultInputs);
-});
+function populateGroups(){Object.entries(GROUPS).forEach(([groupKey,tests])=>{const container=byId('tests-'+groupKey);tests.forEach(test=>{const wrap=document.createElement('label');wrap.className='test-item';wrap.innerHTML=`<input type="checkbox" data-test="${test}"/> ${test}`;container.appendChild(wrap);});});}
+
+function renderResultInputs(){const container=byId('resultsContainer');container.innerHTML='';const checked=[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test);if(checked.length===0){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>';return;}
+checked.forEach(testName=>{const cfg=CONFIG[testName]||{type:'text'};if(cfg.type==='cbc'){let html='<h3>CBC — Complete Blood Count</h3>';html+='<table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Normal Range (editable)</th></tr></thead><tbody>';CBC_FIELDS.forEach(param=>{const idRes=`res-${toId(testName)}-${toId(param)}`;const idRef=`ref-${toId(testName)}-${toId(param)}`;html+=`<tr><td>${param}</td><td><input id="${idRes}" type="text"/></td><td>${CBC_UNITS[param]||''}</td><td><input id="${idRef}" type="text" placeholder="e.g., 4.0 - 11.0"/></td></tr>`;});html+='</tbody></table>';container.insertAdjacentHTML('beforeend',html);return;}
+if(cfg.type==='dropdown'){const id=`res-${toId(testName)}`;let options='<option value="">Select</option>';cfg.options.forEach(o=>{options+=`<option value="${o}">${o}</option>`;});container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${testName}</b><br><select id="${id}">${options}</select></div>`);return;}
+if(cfg.type==='number'){const id=`res-${toId(testName)}`;container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${testName}</b><br><div style="display:flex;gap:8px;align-items:center"><input id="${id}" type="number" step="any"/><span class="unit">${cfg.unit||''}</span><input id="ref-${toId(testName)}" type="text" placeholder="Reference range (optional)"/></div></div>`);return;}
+if(cfg.type==='textarea'){const id=`res-${toId(testName)}`;container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${testName}</b><br><textarea id="${id}" placeholder="${cfg.placeholder||''}"></textarea></div>`);return;}
+const id=`res-${toId(testName)}`;container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${testName}</b><br><input id="${id}" type="text" placeholder="${cfg.placeholder||''}"/></div>`);});
+restoreDraftIntoForm();
 }
 
-/* ---------- Render Inputs ---------- */
-function renderResultInputs(){
-const container=byId('resultsContainer'); container.innerHTML='';
-const checked=[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test);
-if(!checked.length){container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>';return;}
-checked.forEach(test=>{
-const cfg=CONFIG[test]||{type:'text'};
-if(cfg.type==='cbc'){
-let html='<h3>CBC — Complete Blood Count</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Reference</th></tr></thead><tbody>';
-CBC_FIELDS.forEach(f=>{
-const idRes=`res-${slug(test)}-${slug(f)}`; const idRef=`ref-${slug(test)}-${slug(f)}`;
-html+=`<tr><td>${f}</td><td><input id="${idRes}"/></td><td>${CBC_UNITS[f]}</td><td><input id="${idRef}" placeholder="4.0-11.0"/></td></tr>`;
-});
-html+='</tbody></table>'; container.insertAdjacentHTML('beforeend',html); return;
-}
-const id=`res-${slug(test)}`;
-if(cfg.type==='dropdown'){let options='<option value="">Select</option>'; cfg.options.forEach(o=>options+=`<option>${o}</option>`); container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${test}</b><br><select id="${id}">${options}</select></div>`);return;}
-if(cfg.type==='number'){container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${test}</b><br><div style="display:flex;gap:8px;align-items:center"><input id="${id}" type="number" step="any"/><span class="unit">${cfg.unit||''}</span><input id="ref-${slug(test)}" placeholder="Reference range"/></div></div>`);return;}
-if(cfg.type==='textarea'){container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${test}</b><br><textarea id="${id}" placeholder="${cfg.placeholder||''}"></textarea></div>`);return;}
-container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${test}</b><br><input id="${id}" placeholder="${cfg.placeholder||''}"/></div>`);
-});
-}
-
-/* ---------- Collect & Preview ---------- */
-function collectResults(){
-const checked=[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test);
-const rows=[];
-checked.forEach(test=>{
-const cfg=CONFIG[test]||{type:'text'};
-if(cfg.type==='cbc'){const table=CBC_FIELDS.map(f=>({param:f,val:byId(`res-${slug(test)}-${slug(f)}`)?.value||'—',unit:CBC_UNITS[f],ref:byId(`ref-${slug(test)}-${slug(f)}`)?.value||'—'})); rows.push({test,type:'cbc',table}); return;}
-const id=`res-${slug(test)}`; rows.push({test,type:cfg.type,result:byId(id)?.value||'—',unit:cfg.unit||''});
-});
-return rows;
-}
-
-function updatePreview(){
-const name=byId('clientName').value||'—'; const age=byId('age').value||'—';
-const gender=byId('gender').value||'—'; const sample=byId('sampleId').value||'—';
-const tech=byId('technician').value||'—'; const date=byId('reportDate').value||new Date().toLocaleDateString();
-const rows=collectResults();
-let html=`<div class="kv"><div><b>Client</b>${name}</div><div><b>Age/Gender</b>${age}/${gender}</div><div><b>Lab ID</b>${sample}</div><div><b>Date</b>${date}</div></div>`;
-rows.forEach(r=>{
-if(r.type==='cbc'){html+=`<h3>${r.test}</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Reference</th></tr></thead><tbody>`; r.table.forEach(t=>{html+=`<tr><td>${t.param}</td><td>${t.val}</td><td>${t.unit}</td><td>${t.ref}</td></tr>`;}); html+='</tbody></table>'; return;}
-html+=`<p><b>${r.test}:</b> ${r.result} ${r.unit? '('+r.unit+')':''}</p>`;
-});
-html+=`<div class="signs"><div><b>Technician</b><div class="sigbox">${tech}</div></div><div><b>Signature</b><div class="sigbox"></div></div></div>
-<div class="stamp">DIAGNOSIS AT YOUR DOORSTEP<br>0750992939 / 0778379591<div class="stamp-date">Date: ${date}</div></div>
-<div class="footnote muted">Report generated by Mobile Lab Mityana. For clinical correlation only.</div>`;
-byId('previewContainer').innerHTML=html;
-}
-
-/* ---------- Save & Reports ---------- */
-function saveReport(){
-const rows=collectResults();
-const report={id:byId('sampleId').value,date:byId('reportDate').value,name:byId('clientName').value,age:byId('age').value,gender:byId('gender').value,technician:byId('technician').value,results:rows};
-let data=JSON.parse(localStorage.getItem('mlm_reports_v1')||'[]'); data.push(report);
-localStorage.setItem('mlm_reports_v1',JSON.stringify(data));
-alert('Report saved!'); showReports();
-}
-
-function showReports(){
-const container=byId('reportsContainer'); let data=JSON.parse(localStorage.getItem('mlm_reports_v1')||'[]');
-if(!data.length){container.innerHTML='<p class="muted">No reports saved yet.</p>'; return;}
-let html=`<div class="table-container"><table><thead><tr><th>Lab ID</th><th>Name</th><th>Date</th><th>Actions</th></tr></thead><tbody>`;
-data.forEach((r,i)=>{html+=`<tr><td>${r.id}</td><td>${r.name}</td><td>${r.date}</td><td><button onclick="loadReport(${i})">View</button> <button onclick="deleteReport(${i})">Delete</button></td></tr>`;});
-html+='</tbody></table></div>'; container.innerHTML=html;
-}
-
-function loadReport(index){
-let data=JSON.parse(localStorage.getItem('mlm_reports_v1')||'[]'); if(!data[index])return;
-const r=data[index]; byId('clientName').value=r.name; byId('age').value=r.age; byId('gender').value=r.gender;
-byId('sampleId').value=r.id; byId('reportDate').value=r.date; byId('technician').value=r.technician;
-document.querySelectorAll('input[type=checkbox][data-test]').forEach(cb=>cb.checked=false);
-r.results.forEach(res=>{const cb=document.querySelector(`input[type=checkbox][data-test="${res.test}"]`); if(cb)cb.checked=true;});
-renderResultInputs();
-r.results.forEach(res=>{if(res.type==='cbc'){res.table.forEach(t=>{const id=`res-${slug(res.test)}-${slug(t.param)}`; const ref=`ref-${slug(res.test)}-${slug(t.param)}`;
-if(byId(id))byId(id).value=t.val; if(byId(ref))byId(ref).value=t.ref;}); return;}
-const id=`res-${slug(res.test)}`; if(byId(id))byId(id).value=res.result;});
-updatePreview();
-}
-
-function deleteReport(index){
-if(!confirm('Delete this report?')) return;
-let data=JSON.parse(localStorage.getItem('mlm_reports_v1')||'[]'); data.splice(index,1); localStorage.setItem('mlm_reports_v1',JSON.stringify(data));
-showReports();
-}
-
-/* ---------- PDF ---------- */
-function downloadPDF(){ const element=byId('previewContainer'); if(!element) return;
-const opt={margin:0.2, filename:`${byId('sampleId').value}.pdf`, html2canvas:{scale:2}, jsPDF:{unit:'in',format:'a4',orientation:'portrait'}};
-html2pdf().set(opt).from(element).save();
-}
-
-/* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded',()=>{
-byId('reportDate').value=new Date().toISOString().slice(0,10);
-let counter=parseInt(localStorage.getItem('mlm_lab_counter_v1')||'0',10)+1; localStorage.setItem('mlm_lab_counter_v1',counter);
-const ymd=new Date().toISOString().slice(0,10).replace(/-/g,''); byId('sampleId').value=`MLM-${ymd}-${String(counter).padStart(4,'0')}`;
+populateGroups();
+byId('reportDate').value=new Date().toLocaleDateString();
+const counterKey='mlm-lastId';let nextId=parseInt(localStorage.getItem(counterKey)||0)+1;byId('sampleId').value='MLM-'+String(nextId).padStart(4,'0');
+document.querySelectorAll('input[type=checkbox][data-test]').forEach(ch=>ch.addEventListener('change',renderResultInputs));
 byId('btnUpdate').addEventListener('click',updatePreview);
-byId('btnSave').addEventListener('click',saveReport);
-byId('btnView').addEventListener('click',showReports);
 byId('btnDownload').addEventListener('click',downloadPDF);
-showGroupTests('hematology');
+byId('btnSave').addEventListener('click',saveReport);
+byId('btnView').addEventListener('click',viewSavedReports);
+byId('btnExport').addEventListener('click',exportBackup);
+byId('importFile').addEventListener('change',importBackup);
+renderResultInputs();
 });
+
+//=== Data Save / Load
+function collectFormData(){const data={};data.clientName=byId('clientName').value;data.age=byId('age').value;data.gender=byId('gender').value;data.sampleId=byId('sampleId').value;data.reportDate=byId('reportDate').value;data.technician=byId('technician').value;data.tests={};[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].forEach(ch=>{const testName=ch.dataset.test;const cfg=CONFIG[testName]||{type:'text'};if(cfg.type==='cbc'){data.tests[testName]={};CBC_FIELDS.forEach(p=>{data.tests[testName][p]={result:byId(`res-${toId(testName)}-${toId(p)}`).value,ref:byId(`ref-${toId(testName)}-${toId(p)}`).value};});return;}const id=`res-${toId(testName)}`;const val=byId(id)?byId(id).value:'';const refEl=byId(`ref-${toId(testName)}`);data.tests[testName]={result:val,ref:refEl?refEl.value:''};});return data;}
+
+function saveReport(){let saved=JSON.parse(localStorage.getItem('mlm-reports')||'[]');saved.push(collectFormData());localStorage.setItem('mlm-reports',JSON.stringify(saved));alert('Report saved locally.');}
+
+function viewSavedReports(){let saved=JSON.parse(localStorage.getItem('mlm-reports')||'[]');if(!saved.length){alert('No saved reports');return;}let str='Saved Reports:\n';saved.forEach((r,i)=>{str+=`${i+1}. ${r.clientName} - ${r.sampleId} - ${r.reportDate}\n`;});alert(str);}
+
+function exportBackup(){const data=localStorage.getItem('mlm-reports');const blob=new Blob([data||'[]'],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mlm-backup.json';a.click();}
+
+function importBackup(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(){try{JSON.parse(r.result);localStorage.setItem('mlm-reports',r.result);alert('Backup imported successfully');}catch(err){alert('Invalid JSON file');}};r.readAsText(f);}
+
+//=== Preview & PDF
+function updatePreview(){const data=collectFormData();const container=byId('reportPreview');let html='';html+=`<div class="kv"><div><b>Client Name</b>${escapeHtml(data.clientName)}</div><div><b>Age / Gender</b>${escapeHtml(data.age)} / ${escapeHtml(data.gender)}</div></div>`;html+=`<div class="kv"><div><b>Lab ID</b>${escapeHtml(data.sampleId)}</div><div><b>Date</b>${escapeHtml(data.reportDate)}</div></div>`;Object.entries(data.tests).forEach(([testName,val])=>{if(CONFIG[testName]&&CONFIG[testName].type==='cbc'){html+=`<h3>${escapeHtml(testName)}</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Ref</th></tr></thead><tbody>`;CBC_FIELDS.forEach(p=>{html+=`<tr><td>${p}</td><td>${escapeHtml(val[p].result)}</td><td>${CBC_UNITS[p]||''}</td><td>${escapeHtml(val[p].ref)}</td></tr>`;});html+='</tbody></table>';return;}html+=`<div><b>${escapeHtml(testName)}</b>: ${escapeHtml(val.result)} ${escapeHtml(val.ref)}</div>`;});html+=`<div class="stamp">Lab Mityana<span class="stamp-date">${escapeHtml(data.reportDate)}</span></div>`;container.innerHTML=html;saveDraft();}
+function downloadPDF(){const {jsPDF}=window.jspdf;const doc=new jsPDF('p','pt','a4');doc.html(byId('previewCard'),{callback:function(d){d.save(`${byId('sampleId').value||'report'}.pdf`);},x:20,y:20,width:555,pagebreak:{mode:'avoid'}});}
+function saveDraft(){localStorage.setItem('mlm-draft',JSON.stringify(collectFormData()));}
+function restoreDraftIntoForm(){const d=JSON.parse(localStorage.getItem('mlm-draft')||'{}');if(!d||!d.tests)return;byId('clientName').value=d.clientName||'';byId('age').value=d.age||'';byId('gender').value=d.gender||'';byId('sampleId').value=d.sampleId||byId('sampleId').value;byId('reportDate').value=d.reportDate||byId('reportDate').value;byId('technician').value=d.technician||'';Object.keys(d.tests).forEach(testName=>{const ch=document.querySelector(`input[data-test="${testName}"]`);if(ch)ch.checked=true;if(CONFIG[testName]&&CONFIG[testName].type==='cbc'){CBC_FIELDS.forEach(p=>{if(byId(`res-${toId(testName)}-${toId(p)}`))byId(`res-${toId(testName)}-${toId(p)}`).value=d.tests[testName][p].result;if(byId(`ref-${toId(testName)}-${toId(p)}`))byId(`ref-${toId(testName)}-${toId(p)}`).value=d.tests[testName][p].ref;});}else{const id=`res-${toId(testName)}`;if(byId(id))byId(id).value=d.tests[testName].result;const refEl=byId(`ref-${toId(testName)}`);if(refEl)refEl.value=d.tests[testName].ref;}});}
 </script>
 </body>
 </html>
