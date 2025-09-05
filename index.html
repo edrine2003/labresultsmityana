@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Mobile Lab Mityana — Laboratory Report</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
   --brand:#22c55e; --ink:#0f172a; --muted:#64748b; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0;
@@ -68,6 +69,7 @@ tbody tr:nth-child(even){background:#fbfdff}
   <div class="title">Mobile Lab Mityana — Laboratory Report System</div>
 </header>
 <main>
+  <!-- Client & Sample Details -->
   <section class="card form">
     <h2>Client & Sample Details</h2>
     <div class="grid g3">
@@ -82,6 +84,7 @@ tbody tr:nth-child(even){background:#fbfdff}
     </div>
   </section>
 
+  <!-- Test Selection -->
   <section class="card form">
     <h2>Select Tests (by category)</h2>
     <div class="grid g2">
@@ -94,23 +97,24 @@ tbody tr:nth-child(even){background:#fbfdff}
     </div>
   </section>
 
+  <!-- Enter Results -->
   <section class="card form">
     <h2>Enter Results</h2>
     <div id="resultsContainer" class="results-wrap">
       <div class="muted">Tick tests above — their result inputs will appear here.</div>
     </div>
     <div class="btns" style="margin-top:10px">
-      <button id="btnUpdate" class="btn">Update Preview</button>
-      <button id="btnDownload" class="btn alt">Download PDF</button>
+      <button id="btnUpdate" class="btn">Update Preview & Download PDF</button>
       <button id="btnSave" class="btn ghost">Save Report</button>
       <button id="btnView" class="btn">View Saved Reports</button>
-      <button id="btnExport" class="btn">Export Backup</button>
+      <button id="btnExport" class="btn alt">Export Backup</button>
       <label class="btn alt" style="cursor:pointer">Import Backup
         <input type="file" id="importFile" style="display:none"/>
       </label>
     </div>
   </section>
 
+  <!-- Preview -->
   <section id="previewCard" class="card">
     <div class="rep-head">
       <img class="rep-logo" id="logoImg" src="icons/logo.png" alt="Lab Logo"
@@ -122,13 +126,13 @@ tbody tr:nth-child(even){background:#fbfdff}
       <div class="muted">Installable PWA</div>
     </div>
     <div class="rep-body" id="reportPreview">
-      <p class="muted">Fill details and click <b>Update Preview</b>.</p>
+      <p class="muted">Fill details and click <b>Update Preview & Download PDF</b>.</p>
     </div>
   </section>
 </main>
 
 <script>
-window.__logoFallback = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=";
+window.__logoFallback = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=";
 
 const GROUPS = {
   hematology:["CBC – Complete Blood Count","BAT – Bleeding & Clotting Test","Blood Smear","Sickling Test"],
@@ -203,12 +207,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     byId('tests-'+g).addEventListener('change',renderResultInputs);
   });
 
-  byId('btnUpdate').addEventListener('click',updatePreview);
+  byId('btnUpdate').addEventListener('click',()=>{
+    updatePreview();
+    saveReport();
+    setTimeout(downloadPDF,500);
+  });
   byId('btnSave').addEventListener('click',saveReport);
   byId('btnView').addEventListener('click',showReports);
   byId('btnExport').addEventListener('click',exportBackup);
   byId('importFile').addEventListener('change',e=>importBackup(e.target.files[0]));
-  byId('btnDownload').addEventListener('click',downloadPDF);
 
   recoverDraft();
   setInterval(autosaveForm,10000);
@@ -281,10 +288,14 @@ function updatePreview(){
 
 function downloadPDF(){
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'pt', format:'a4'});
-  doc.html(byId('previewCard'), {
-    callback: function(pdf) { pdf.save(byId('sampleId').value+'.pdf'); },
-    x:20, y:20, width:555, windowWidth:800
+  html2canvas(byId('previewCard')).then(canvas=>{
+    const imgData=canvas.toDataURL('image/png');
+    const pdf=new jsPDF({orientation:'portrait', unit:'px', format:'a4'});
+    const pdfWidth=pdf.internal.pageSize.getWidth();
+    const pdfHeight=pdf.internal.pageSize.getHeight();
+    const ratio=Math.min(pdfWidth/canvas.width, pdfHeight/canvas.height);
+    pdf.addImage(imgData,'PNG',0,0,canvas.width*ratio,canvas.height*ratio);
+    pdf.save(byId('sampleId').value+'.pdf');
   });
 }
 
