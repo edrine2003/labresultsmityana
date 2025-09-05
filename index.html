@@ -132,7 +132,7 @@ tbody tr:nth-child(even){background:#fbfdff}
 </main>
 
 <script>
-window.__logoFallback = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=";
+window.__logoFallback = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABpUlEQVR4Xu3ZsU3DMBQF0S8YQ5QkV6g7pGxLoI2s4gk6iY2k3gE2m5Q6sV5yZt2Q8yQIC9/Za2Jw8ABAgQIECBAgAABAvwK7zq1sI/8eG5Z9fYw0n1m2gZ6ZJm2V2g4yq0Qq1YpvsN1s5b/2e6m8rWq+7q6jzq9w+v9z0Qj6H2w3g0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gg0Gh0X6B+Xj7j+8qz0B1JABAgQIECBAgAABAp0B+S0iBf2N1sAAAAASUVORK5CYII=";
 
 const GROUPS = {
   hematology:["CBC – Complete Blood Count","BAT – Bleeding & Clotting Test","Blood Smear","Sickling Test"],
@@ -142,6 +142,7 @@ const GROUPS = {
   other:["Blood Grouping","Stool Analysis","Urinalysis","Widal Serum","Widal Stool","Gram Staining","DNA"],
   panels:["Electrolytes"]
 };
+
 const CBC_FIELDS=["WBC","RBC","HBG","HCT","MCV","MCH","MCHC","PLT","LY","MO","GR","RDW-CV","RDW-SD","PCT","MPV","PDW","P-LCR"];
 const CBC_UNITS={"WBC":"10⁹/L","RBC":"10¹²/L","HBG":"g/dL","HCT":"%","MCV":"fL","MCH":"pg","MCHC":"g/dL","PLT":"10⁹/L","LY":"%","MO":"%","GR":"%","RDW-CV":"%","RDW-SD":"fL","PCT":"%","MPV":"fL","PDW":"fL","P-LCR":"%"};
 
@@ -207,11 +208,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     byId('tests-'+g).addEventListener('change',renderResultInputs);
   });
 
-  byId('btnUpdate').addEventListener('click',()=>{
-    updatePreview();
-    saveReport();
-    setTimeout(downloadPDF,500);
+  // --- Updated preview & PDF for all tests ---
+  byId('btnUpdate').addEventListener('click', async ()=>{
+    await updateAndDownloadPDF();
   });
+
   byId('btnSave').addEventListener('click',saveReport);
   byId('btnView').addEventListener('click',showReports);
   byId('btnExport').addEventListener('click',exportBackup);
@@ -219,61 +220,77 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   recoverDraft();
   setInterval(autosaveForm,10000);
-  setInterval(()=>console.log('keepalive',new Date().toISOString()),60000);
 });
 
+// --- Render results inputs ---
 function renderResultInputs(){
   const container=byId('resultsContainer');
   container.innerHTML='';
   const checked=[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test);
   if(checked.length===0){ container.innerHTML='<div class="muted">Tick tests above — their result inputs will appear here.</div>'; return; }
 
-  checked.forEach(testName=>{
-    const cfg=CONFIG[testName]||{type:'text'};
+  checked.forEach(test=>{
+    const cfg=CONFIG[test]||{type:'text'};
+    const wrap=document.createElement('div'); wrap.className='result-row';
     if(cfg.type==='cbc'){
-      let html='<h3>CBC — Complete Blood Count</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Normal Range</th></tr></thead><tbody>';
-      CBC_FIELDS.forEach(param=>{
-        const idRes=`res-${toId(testName)}-${toId(param)}`;
-        const idRef=`ref-${toId(testName)}-${toId(param)}`;
-        html+=`<tr><td>${param}</td><td><input id="${idRes}" type="text" /></td><td>${CBC_UNITS[param]||''}</td><td><input id="${idRef}" type="text" placeholder="e.g., 4-10" /></td></tr>`;
+      let html=`<h3>${test}</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Reference</th></tr></thead><tbody>`;
+      CBC_FIELDS.forEach(f=>{
+        html+=`<tr>
+          <td>${f}</td>
+          <td><input id="res-${toId(test)}-${toId(f)}" type="text"/></td>
+          <td>${CBC_UNITS[f]||''}</td>
+          <td><input id="ref-${toId(test)}-${toId(f)}" type="text"/></td>
+        </tr>`;
       });
       html+='</tbody></table>';
-      container.insertAdjacentHTML('beforeend',html);
+      wrap.innerHTML=html;
+    } else if(cfg.type==='dropdown'){
+      wrap.innerHTML=`<label>${test}
+        <select id="res-${toId(test)}">
+          <option value="">Select</option>${cfg.options.map(o=>`<option>${o}</option>`).join('')}
+        </select>
+        <input id="ref-${toId(test)}" placeholder="Reference / notes" type="text"/>
+      </label>`;
+    } else if(cfg.type==='textarea'){
+      wrap.innerHTML=`<label>${test}<textarea id="res-${toId(test)}" placeholder="${cfg.placeholder||''}"></textarea></label>
+        <input id="ref-${toId(test)}" placeholder="Reference / notes" type="text"/>`;
     } else {
-      const idRes='res-'+toId(testName);
-      const idRef='ref-'+toId(testName);
-      let inp='';
-      if(cfg.type==='dropdown'){
-        inp=`<select id="${idRes}">${cfg.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
-      } else if(cfg.type==='textarea'){
-        inp=`<textarea id="${idRes}" placeholder="${cfg.placeholder||''}"></textarea>`;
-      } else {
-        inp=`<input id="${idRes}" type="text" placeholder="${cfg.placeholder||''}" />`;
-      }
-      container.insertAdjacentHTML('beforeend',`<div class="result-row"><b>${escapeHtml(testName)}</b>${inp} <span class="unit">${cfg.unit||''}</span> <input id="${idRef}" type="text" placeholder="Normal Range" style="width:80px"/></div>`);
+      wrap.innerHTML=`<label>${test}<input id="res-${toId(test)}" type="text" placeholder="${cfg.placeholder||''}"/></label>
+        <input id="ref-${toId(test)}" placeholder="Reference / notes" type="text"/>`;
     }
+    container.appendChild(wrap);
   });
-  restoreDraft();
 }
 
-function updatePreview(){
+// --- Update preview + download PDF ---
+async function updateAndDownloadPDF(){
+  const checked=[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test);
+  if(checked.length===0){ alert("Select at least one test."); return; }
+
   const client=escapeHtml(byId('clientName').value);
   const age=escapeHtml(byId('age').value);
   const gender=escapeHtml(byId('gender').value);
   const labId=escapeHtml(byId('sampleId').value);
   const date=escapeHtml(byId('reportDate').value);
   const tech=escapeHtml(byId('technician').value);
-  const container=byId('reportPreview');
-  let html=`<div class="kv"><div><b>Client Name</b>${client}</div><div><b>Age</b>${age}</div><div><b>Gender</b>${gender}</div><div><b>Lab ID</b>${labId}</div><div><b>Date</b>${date}</div><div><b>Technician</b>${tech}</div></div>`;
-  const checked=[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test);
+
+  let html=`<div class="kv">
+    <div><b>Client Name</b>${client}</div>
+    <div><b>Age</b>${age}</div>
+    <div><b>Gender</b>${gender}</div>
+    <div><b>Lab ID</b>${labId}</div>
+    <div><b>Date</b>${date}</div>
+    <div><b>Technician</b>${tech}</div>
+  </div>`;
+
   checked.forEach(test=>{
     const cfg=CONFIG[test]||{type:'text'};
     if(cfg.type==='cbc'){
-      html+=`<h3>${test}</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Normal Range</th></tr></thead><tbody>`;
-      CBC_FIELDS.forEach(param=>{
-        const val=escapeHtml(byId('res-'+toId(test)+'-'+toId(param))?.value);
-        const ref=escapeHtml(byId('ref-'+toId(test)+'-'+toId(param))?.value);
-        html+=`<tr><td>${param}</td><td>${val}</td><td>${CBC_UNITS[param]||''}</td><td>${ref}</td></tr>`;
+      html+=`<h3>${test}</h3><table><thead><tr><th>Parameter</th><th>Result</th><th>Unit</th><th>Reference</th></tr></thead><tbody>`;
+      CBC_FIELDS.forEach(f=>{
+        const val=escapeHtml(byId('res-'+toId(test)+'-'+toId(f))?.value);
+        const ref=escapeHtml(byId('ref-'+toId(test)+'-'+toId(f))?.value);
+        html+=`<tr><td>${f}</td><td>${val}</td><td>${CBC_UNITS[f]||''}</td><td>${ref}</td></tr>`;
       });
       html+='</tbody></table>';
     } else {
@@ -282,93 +299,85 @@ function updatePreview(){
       html+=`<div class="result-row"><b>${test}</b>: ${val} <span class="unit">${cfg.unit||''}</span> <small>Ref: ${ref}</small></div>`;
     }
   });
-  html+=`<div class="stamp">Authorized Signature<div class="stamp-date">${date}</div></div>`;
-  container.innerHTML=html;
-}
 
-function downloadPDF(){
-  const { jsPDF } = window.jspdf;
-  html2canvas(byId('previewCard')).then(canvas=>{
+  html+=`<div class="stamp">Authorized Signature<div class="stamp-date">${date}</div></div>`;
+  byId('reportPreview').innerHTML=html;
+
+  localStorage.setItem('mlm_report_'+labId, html);
+
+  await html2canvas(byId('previewCard'),{scale:2}).then(canvas=>{
     const imgData=canvas.toDataURL('image/png');
-    const pdf=new jsPDF({orientation:'portrait', unit:'px', format:'a4'});
+    const { jsPDF } = window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfWidth=pdf.internal.pageSize.getWidth();
     const pdfHeight=pdf.internal.pageSize.getHeight();
-    const ratio=Math.min(pdfWidth/canvas.width, pdfHeight/canvas.height);
+    const ratio=Math.min(pdfWidth/canvas.width,pdfHeight/canvas.height);
     pdf.addImage(imgData,'PNG',0,0,canvas.width*ratio,canvas.height*ratio);
-    pdf.save(byId('sampleId').value+'.pdf');
+    pdf.save(labId+'.pdf');
   });
 }
 
+// --- Autosave draft ---
+function autosaveForm(){
+  const data={};
+  [...document.querySelectorAll('input,textarea,select')].forEach(el=>{
+    if(el.id)data[el.id]=el.value;
+  });
+  localStorage.setItem('mlm_draft',JSON.stringify(data));
+}
+
+function recoverDraft(){
+  const data=JSON.parse(localStorage.getItem('mlm_draft')||'{}');
+  Object.entries(data).forEach(([k,v])=>{
+    const el=byId(k); if(el)el.value=v;
+  });
+  renderResultInputs();
+}
+
+// --- Save + View Reports ---
 function saveReport(){
   const labId=byId('sampleId').value;
-  localStorage.setItem('mlm_report_'+labId,byId('reportPreview').innerHTML);
-  alert('Report saved!');
+  const html=byId('reportPreview').innerHTML;
+  if(!html){alert("No preview to save.");return;}
+  localStorage.setItem('mlm_report_'+labId, html);
+  alert("Report saved.");
 }
 
 function showReports(){
-  const keys=Object.keys(localStorage).filter(k=>k.startsWith('mlm_report_'));
-  if(keys.length===0){ alert('No saved reports'); return; }
-  const list=keys.map(k=>`${k.replace('mlm_report_','')} — Click to view`).join('\n');
-  alert(list);
+  let html="<h3>Saved Reports:</h3><ul>";
+  Object.keys(localStorage).filter(k=>k.startsWith('mlm_report_')).forEach(k=>{
+    html+=`<li><b>${k.replace('mlm_report_','')}</b> <button onclick="openReport('${k}')">View</button></li>`;
+  });
+  html+="</ul>";
+  const win=window.open('','_blank');
+  win.document.write(html);
 }
 
+function openReport(k){
+  const html=localStorage.getItem(k);
+  const win=window.open('','_blank');
+  win.document.write(html);
+}
+
+// --- Backup / Restore ---
 function exportBackup(){
-  const backup=JSON.stringify(localStorage,null,2);
-  const blob=new Blob([backup],{type:'application/json'});
+  const data={};
+  Object.keys(localStorage).forEach(k=>{data[k]=localStorage[k];});
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='mlm_backup.json';
-  a.click();
+  a.href=url; a.download='mlm_backup.json'; a.click(); URL.revokeObjectURL(url);
 }
 
 function importBackup(file){
   if(!file) return;
   const reader=new FileReader();
   reader.onload=e=>{
-    try{ const data=JSON.parse(e.target.result); Object.assign(localStorage,data); alert('Backup imported'); location.reload(); }catch(err){alert('Invalid file');}
+    const data=JSON.parse(e.target.result);
+    Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v));
+    alert("Backup imported. Reload page to see changes.");
   };
   reader.readAsText(file);
-}
-
-function autosaveForm(){
-  const formData={
-    client:byId('clientName').value,
-    age:byId('age').value,
-    gender:byId('gender').value,
-    technician:byId('technician').value,
-    checked:[...document.querySelectorAll('input[type=checkbox][data-test]:checked')].map(i=>i.dataset.test)
-  };
-  localStorage.setItem('mlm_draft',JSON.stringify(formData));
-}
-
-function recoverDraft(){
-  const draft=localStorage.getItem('mlm_draft');
-  if(!draft) return;
-  const data=JSON.parse(draft);
-  byId('clientName').value=data.client||'';
-  byId('age').value=data.age||'';
-  byId('gender').value=data.gender||'';
-  byId('technician').value=data.technician||'';
-  if(data.checked && data.checked.length>0){
-    document.querySelectorAll('input[type=checkbox][data-test]').forEach(cb=>{ cb.checked=data.checked.includes(cb.dataset.test); });
-    renderResultInputs();
-  }
-}
-
-function restoreDraft(){
-  const draft=localStorage.getItem('mlm_draft');
-  if(!draft) return;
-  const data=JSON.parse(draft);
-  data.checked?.forEach(test=>{
-    if(CONFIG[test]?.type==='cbc') CBC_FIELDS.forEach(param=>{
-      const idRes='res-'+toId(test)+'-'+toId(param);
-      if(localStorage.getItem(idRes)) byId(idRes).value=localStorage.getItem(idRes);
-    });
-    const idRes='res-'+toId(test);
-    if(localStorage.getItem(idRes)) byId(idRes).value=localStorage.getItem(idRes);
-    const idRef='ref-'+toId(test);
-    if(localStorage.getItem(idRef)) byId(idRef).value=localStorage.getItem(idRef);
-  });
 }
 </script>
 </body>
